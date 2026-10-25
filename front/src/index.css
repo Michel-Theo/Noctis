@@ -1,0 +1,225 @@
+/* Design tokens — miroir des variables Figma « NOCTIS — Design » (collections Color / Spacing) */
+:root {
+  --primitive-nuit-950: #0b0a0c;
+  --primitive-nuit-900: #141215;
+  --primitive-fumee-800: #2a272b;
+  --primitive-fumee-700: #3a363b;
+  --primitive-cendre-500: #8e8880;
+  --primitive-cendre-700: #5e5952;
+  --primitive-argent-300: #b9bdc2;
+  --primitive-os-50: #f3efe7;
+  --primitive-os-100: #e7e1d5;
+  --primitive-os-200: #d6cfc2;
+  --primitive-sang-700: #4e0a10;
+  --primitive-sang-500: #7a1018;
+  --primitive-sang-400: #9a1a24;
+  --primitive-sang-300: #d9464f;
+
+  --spacing-2xs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  --spacing-4xl: 96px;
+  --spacing-5xl: 128px;
+
+  --font-display: 'Michroma', sans-serif;
+  --font-heading: 'Syne', sans-serif;
+  --font-body: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root,
+[data-theme='nuit'] {
+  --color-bg-primary: var(--primitive-nuit-950);
+  --color-bg-surface: var(--primitive-nuit-900);
+  --color-bg-elevated: var(--primitive-fumee-800);
+  --color-text-primary: var(--primitive-os-100);
+  --color-text-secondary: var(--primitive-cendre-500);
+  --color-text-inverse: var(--primitive-nuit-950);
+  --color-text-accent: var(--primitive-sang-300);
+  --color-text-on-accent: var(--primitive-os-100);
+  --color-border-default: var(--primitive-fumee-800);
+  --color-border-strong: var(--primitive-fumee-700);
+  --color-accent-default: var(--primitive-sang-500);
+  --color-accent-hover: var(--primitive-sang-400);
+  --color-metal-silver: var(--primitive-argent-300);
+}
+
+[data-theme='os'] {
+  --color-bg-primary: var(--primitive-os-100);
+  --color-bg-surface: var(--primitive-os-50);
+  --color-bg-elevated: var(--primitive-os-200);
+  --color-text-primary: var(--primitive-nuit-950);
+  --color-text-secondary: var(--primitive-cendre-700);
+  --color-text-inverse: var(--primitive-os-100);
+  --color-text-accent: var(--primitive-sang-500);
+  --color-border-default: var(--primitive-os-200);
+  --color-border-strong: var(--primitive-cendre-500);
+  --color-accent-default: var(--primitive-sang-500);
+  --color-accent-hover: var(--primitive-sang-700);
+  --color-metal-silver: var(--primitive-cendre-500);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+body {
+  /* clip (et non hidden) : hidden casse position: sticky des sections pinnées */
+  overflow-x: clip;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: var(--color-accent-default);
+  color: var(--color-text-on-accent);
+}
+
+/* Typography roles (styles de texte Figma) */
+.t-display-xl {
+  font-family: var(--font-display);
+  font-size: clamp(56px, 12vw, 180px);
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.t-display-l {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 56px);
+  line-height: 1.05;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.t-h1 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: clamp(32px, 3.2vw, 44px);
+  line-height: 1.1;
+}
+.t-h3 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 1.25;
+}
+.t-body-l {
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+}
+.t-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.t-label-s {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+.t-accent {
+  color: var(--color-text-accent);
+}
+
+/* Bouton primaire — remplissage qui monte au survol */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn--primary {
+  background: var(--color-accent-default);
+  color: var(--color-text-on-accent);
+}
+.btn--primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-accent-hover);
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 0.35s var(--ease-reveal);
+}
+.btn--primary:hover::before {
+  clip-path: inset(0 0 0 0);
+}
+.btn--secondary {
+  border: 1px solid var(--color-text-primary);
+  transition:
+    background 0.35s var(--ease-reveal),
+    color 0.35s var(--ease-reveal);
+}
+.btn--secondary:hover {
+  background: var(--color-text-primary);
+  color: var(--color-text-inverse);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
