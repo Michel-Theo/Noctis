@@ -57,6 +57,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
+    public function setEmail(string $email): void
+    {
+        $this->email = self::normalizeEmail($email);
+    }
+
     public function getUserIdentifier(): string
     {
         return $this->email;
