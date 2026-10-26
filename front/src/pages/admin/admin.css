@@ -495,7 +495,49 @@ fieldset.field {
   background: var(--color-accent-default);
 }
 
+/* ---------- E-mails ---------- */
+.emails {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: var(--spacing-md);
+  align-items: start;
+}
+.emails__list {
+  gap: var(--spacing-2xs);
+  padding: var(--spacing-sm);
+}
+.emails__item {
+  display: grid;
+  gap: var(--spacing-2xs);
+  padding: 12px;
+  border-left: 2px solid transparent;
+  text-align: left;
+  color: var(--color-text-secondary);
+}
+.emails__item:hover,
+.emails__item.is-current {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+}
+.emails__item.is-current {
+  border-left-color: var(--color-accent-default);
+}
+.emails__subject {
+  color: var(--color-text-primary);
+  text-transform: none;
+}
+/* Largeur d'un client de messagerie : l'e-mail fait 600 px. */
+.emails__preview iframe {
+  width: 100%;
+  height: 78vh;
+  border: 1px solid var(--color-border-default);
+  background: #0b0a0c;
+}
+
 @media (max-width: 900px) {
+  .emails {
+    grid-template-columns: 1fr;
+  }
   .admin {
     grid-template-columns: 1fr;
   }

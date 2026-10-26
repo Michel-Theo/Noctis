@@ -1,0 +1,8 @@
+Formulaire de contact — {{ subject }}
+
+De : {{ name }} <{{ message.email }}>
+Le : {{ message.createdAt|format_datetime(pattern: "d MMMM yyyy 'à' HH'h'mm", locale: 'fr') }}
+
+{{ message.message }}
+
+Répondez directement à cet e-mail : la réponse part chez {{ message.firstName }}.

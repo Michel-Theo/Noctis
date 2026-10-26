@@ -1,0 +1,29 @@
+NOCTIS — Commande N° {{ order.reference }}
+
+Votre relique est en route.
+
+Merci, {{ order.firstName }}. La fonte commence cette nuit. Vous recevrez un e-mail à chaque étape : coulée, polissage, expédition.
+
+{% for item in order.items %}
+- {{ item.name }}{% if item.quantity > 1 %} x{{ item.quantity }}{% endif %} — {{ item.finish }}, taille {{ item.size }}{% if item.serials is not empty %} — N° {% for n in item.serials %}{{ '%03d'|format(n) }}{{ not loop.last ? ', ' : '' }}{% endfor %} / {{ '%03d'|format(item.product.editionTotal) }}{% endif %} — {{ (item.total / 100)|format_currency('EUR', locale: 'fr') }}
+{% endfor %}
+
+Sous-total : {{ (order.subtotal / 100)|format_currency('EUR', locale: 'fr') }}
+{% if order.discount > 0 %}Code {{ order.discountCode }} : −{{ (order.discount / 100)|format_currency('EUR', locale: 'fr') }}
+{% endif %}Livraison : {{ order.shippingCost ? (order.shippingCost / 100)|format_currency('EUR', locale: 'fr') : 'offerte' }}
+Total TTC : {{ (order.total / 100)|format_currency('EUR', locale: 'fr') }}
+
+Livraison ({{ shipping }}) :
+{{ order.firstName }} {{ order.lastName }}
+{{ order.address }}
+{{ order.postalCode }} {{ order.city }}, {{ order.country }}
+
+Fabrication :
+{% for s in timeline %}{{ s.done ? '[x]' : '[ ]' }} {{ s.label }} — {{ s.done ? '' : '≈ ' }}{{ s.date|format_date(pattern: 'd MMMM', locale: 'fr') }}
+{% endfor %}
+
+Suivre ma commande : {{ trackUrl }}
+
+—
+NOCTIS · Projet portfolio — aucune vente réelle
+{{ site }}

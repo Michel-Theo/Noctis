@@ -70,6 +70,11 @@
 .auth__tab[aria-selected='true']::after {
   transform: scaleX(1);
 }
+.auth__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .auth__remember {
   display: flex;
   align-items: center;
@@ -94,6 +99,22 @@
 .auth__remember:has(input:focus-visible) {
   outline: 1px solid var(--color-text-primary);
   outline-offset: 4px;
+}
+.auth__heading {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 22px;
+}
+.auth__done {
+  display: grid;
+  gap: 20px;
+  justify-items: start;
+}
+.auth__done .btn {
+  justify-self: stretch;
+}
+.auth__back {
+  justify-self: start;
 }
 .auth__note {
   font-size: 14px;

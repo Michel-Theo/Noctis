@@ -1,0 +1,34 @@
+{% extends 'email/layout.html.twig' %}
+{% import 'email/_parts.html.twig' as parts %}
+
+{% block preheader %}{{ text }}{% endblock %}
+
+{% block content %}
+  <tr>
+    <td class="panel pad" style="border-left: 2px solid #7A1018;">
+      <img src="{{ email.image('@images/sigil.png') }}" width="48" height="48" alt="" style="margin-bottom: 24px;">
+      <div class="label accent">Commande N°&nbsp;{{ order.reference }}</div>
+      <h1 class="title" style="padding-top: 14px;">{{ title }}</h1>
+      <p class="text" style="padding-top: 18px;">{{ order.firstName }}, {{ text|first|lower }}{{ text|slice(1) }}</p>
+    </td>
+  </tr>
+  <tr><td style="height: 16px;"></td></tr>
+  <tr>
+    <td class="panel pad">
+      <div class="label" style="padding-bottom: 18px;">Fabrication</div>
+      {{ parts.timeline(timeline) }}
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 28px;">
+        {% for item in order.items %}
+          <tr>
+            <td class="rule" style="padding: 14px 0;">
+              <span class="heading" style="font-size: 16px;">{{ item.name }}</span>
+              {% if item.serials is not empty %}<span class="label accent">&nbsp;&nbsp;N°&nbsp;{% for n in item.serials %}{{ '%03d'|format(n) }}{{ not loop.last ? ', ' : '' }}{% endfor %}</span>{% endif %}
+            </td>
+            <td class="rule label" align="right" style="padding: 14px 0;">{{ item.finish }} · {{ item.size }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+      <div style="padding-top: 32px;">{{ parts.button('Suivre ma commande', trackUrl) }}</div>
+    </td>
+  </tr>
+{% endblock %}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../../lib/auth-context'
 import type { ApiError } from '../../lib/api'
 import { Field } from '../../components/checkout/Field'
@@ -82,11 +83,16 @@ export function AuthPanel() {
           />
 
           {tab === 'login' && (
-            <label className="auth__remember t-label-s">
-              <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-              <span className="auth__box" aria-hidden="true" />
-              Rester connecté
-            </label>
+            <div className="auth__row">
+              <label className="auth__remember t-label-s">
+                <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
+                <span className="auth__box" aria-hidden="true" />
+                Rester connecté
+              </label>
+              <Link to="/compte/mot-de-passe" className="t-label link-draw">
+                Mot de passe oublié
+              </Link>
+            </div>
           )}
 
           {failure && (

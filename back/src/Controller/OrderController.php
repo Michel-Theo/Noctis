@@ -7,6 +7,7 @@ use App\Dto\OrderInput;
 use App\Dto\PaymentInput;
 use App\Entity\Order;
 use App\Entity\OrderStatus;
+use App\Mail\NoctisMailer;
 use App\Order\OrderFactory;
 use App\Order\OrderPresenter;
 use App\Order\SerialAllocator;
@@ -48,6 +49,7 @@ final class OrderController extends AbstractController
         #[MapRequestPayload] PaymentInput $payment,
         PaymentGateway $gateway,
         SerialAllocator $serials,
+        NoctisMailer $mailer,
         #[MapQueryParameter] ?string $token = null,
     ): JsonResponse {
         $order = $this->find($reference, $token);
@@ -63,6 +65,8 @@ final class OrderController extends AbstractController
             $this->orders->releasePayment($order);
             throw $e;
         }
+        // Après le paiement enregistré : un e-mail raté ne remet pas la commande en cause.
+        $mailer->orderConfirmation($order);
 
         return $this->json($this->presenter->present($order));
     }

@@ -17,10 +17,26 @@ final class OrderPresenter
         ['shipped', 'Expédiée', 10, [OrderStatus::Shipped, OrderStatus::Delivered]],
     ];
 
+    /**
+     * Frise à 4 étapes (dates estimées à partir du paiement), partagée par l'API et les e-mails.
+     *
+     * @return list<array{key: string, label: string, date: \DateTimeImmutable, done: bool}>
+     */
+    public static function timeline(Order $order): array
+    {
+        $start = $order->getPaidAt() ?? $order->getCreatedAt();
+
+        return array_map(static fn (array $s) => [
+            'key' => $s[0],
+            'label' => $s[1],
+            'date' => $start->modify(\sprintf('+%d days', $s[2])),
+            'done' => \in_array($order->getStatus(), $s[3], true),
+        ], self::TIMELINE);
+    }
+
     /** @return array<string, mixed> */
     public function present(Order $order): array
     {
-        $start = $order->getPaidAt() ?? $order->getCreatedAt();
 
         return [
             'reference' => $order->getReference(),
@@ -45,12 +61,7 @@ final class OrderPresenter
             'discount' => $order->getDiscount(),
             'tax' => (int) round($order->getTotal() / 6),
             'total' => $order->getTotal(),
-            'timeline' => array_map(static fn (array $s) => [
-                'key' => $s[0],
-                'label' => $s[1],
-                'date' => $start->modify(\sprintf('+%d days', $s[2]))->format(\DATE_ATOM),
-                'done' => \in_array($order->getStatus(), $s[3], true),
-            ], self::TIMELINE),
+            'timeline' => array_map(static fn (array $s) => array_replace($s, ['date' => $s['date']->format(\DATE_ATOM)]), self::timeline($order)),
         ];
     }
 }
