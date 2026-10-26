@@ -19,7 +19,7 @@ export function AtelierPage() {
   return (
     <main ref={root} className="vitrine atelier">
       <header className="atelier__hero">
-        <img src="/img/vitrine/mains_large.webp" alt="" />
+        <img src="/img/vitrine/atelier_orfevre.webp" alt="" />
         <div className="intro">
           <p className="t-label t-accent">L'atelier</p>
           <h1 className="atelier__title">
