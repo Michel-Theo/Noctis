@@ -14,13 +14,16 @@ export type Article = {
   date: string
   excerpt: string
   cover: string
+  /** Cadrage de la couverture quand elle est recadrée (object-position). */
+  coverPosition?: string
   /** Pièce mise en avant en bas d'article. */
   product?: { slug: string; label: string }
   body: Block[]
 }
 
 const IMG = '/img/produit'
-const NUIT = '/img/vitrine/mains_large.webp'
+const V = '/img/vitrine'
+const NUIT = `${V}/mains_large.webp`
 
 export const ARTICLES: Article[] = [
   {
@@ -56,7 +59,8 @@ export const ARTICLES: Article[] = [
     minutes: 4,
     date: '2026-09-28',
     excerpt: "Sous un lampadaire, l'argent ne brille pas : il découpe. Pourquoi nos pièces sont pensées pour l'obscurité.",
-    cover: `${IMG}/porte_nuit_nuit.webp`,
+    cover: `${V}/journal_chaine.webp`,
+    coverPosition: '50% 78%',
     product: { slug: 'couronne-i', label: 'Découvrir Couronne I' },
     body: [
       {
@@ -68,6 +72,7 @@ export const ARTICLES: Article[] = [
         text: "C'est pour cette lumière-là que nous dessinons. Les lames de Couronne I sont orientées pour accrocher un reflet à la fois : un lampadaire, un écran, la flamme d'un briquet. La bague change de forme selon l'endroit où l'on se tient.",
       },
       { type: 'quote', text: '« Sous un lampadaire, l’argent ne brille pas : il découpe. »' },
+      { type: 'images', images: [`${V}/journal_perles.webp`, `${IMG}/porte_nuit_nuit.webp`] },
       {
         type: 'p',
         text: "Le rhodium accentue l'effet : plus blanc que l'argent nu, il donne aux reflets cette froideur de lame. Portée sur une main nue, la pièce devient un signal plus qu'un ornement.",
@@ -81,7 +86,7 @@ export const ARTICLES: Article[] = [
     minutes: 3,
     date: '2026-09-14',
     excerpt: "Un voile de métal précieux, quelques microns d'épaisseur : ce qui protège l'argent, et comment le garder longtemps.",
-    cover: `${IMG}/34_nuit.webp`,
+    cover: `${V}/journal_macro.webp`,
     product: { slug: 'couronne-i', label: 'Découvrir Couronne I' },
     body: [
       {
@@ -92,6 +97,7 @@ export const ARTICLES: Article[] = [
         type: 'p',
         text: "Ce métal de la famille du platine est plus dur et plus blanc que l'argent. Il ne ternit pas et résiste aux rayures légères. Sur des lames polies miroir, il garde l'éclat intact des mois durant.",
       },
+      { type: 'images', images: [`${V}/journal_alliance.webp`, `${IMG}/macro-griffe_nuit.webp`] },
       {
         type: 'p',
         text: "Pour qu'il dure : évitez le chlore des piscines et les parfums appliqués directement sur la pièce, rangez-la seule dans son écrin, et essuyez-la avec un chiffon doux. Si les frottements finissent par user le voile, nous pouvons le reposer à l'atelier.",
@@ -106,7 +112,8 @@ export const ARTICLES: Article[] = [
     minutes: 8,
     date: '2026-08-30',
     excerpt: "Résine, plâtre, 960 °C : les étapes d'une fonte à cire perdue, la technique qui donne naissance à chaque pièce.",
-    cover: '/img/vitrine/atelier_02-couler.webp',
+    cover: `${V}/journal_maillons.webp`,
+    coverPosition: '50% 35%',
     product: { slug: 'couronne-i', label: 'Découvrir Couronne I' },
     body: [
       {

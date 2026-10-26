@@ -33,7 +33,7 @@ export function JournalPage() {
       {first && (
         <Link to={`/journal/${first.slug}`} className="feature reveal" key={first.slug}>
           <div className="feature__media">
-            <img src={first.cover} alt="" />
+            <img src={first.cover} alt="" style={{ objectPosition: first.coverPosition }} />
           </div>
           <div className="feature__text">
             <p className="t-label-s">{meta(first, true)}</p>
@@ -49,7 +49,7 @@ export function JournalPage() {
           {rest.map((a) => (
             <Link key={a.slug} to={`/journal/${a.slug}`} className="article-card reveal">
               <div className="article-card__media">
-                <img src={a.cover} alt="" loading="lazy" />
+                <img src={a.cover} alt="" loading="lazy" style={{ objectPosition: a.coverPosition }} />
               </div>
               <p className="t-label-s">{meta(a)}</p>
               <h2 className="t-h3">{a.title}</h2>

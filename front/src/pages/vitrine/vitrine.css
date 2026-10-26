@@ -140,6 +140,7 @@
 }
 .atelier__hero .intro {
   position: relative;
+  color: var(--primitive-os-100);
   display: grid;
   gap: var(--spacing-md);
 }

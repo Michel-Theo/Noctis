@@ -26,7 +26,7 @@ export function ArticlePage() {
         </p>
         <h1 className="post__title">{a.title}</h1>
       </header>
-      <img className="post__cover reveal" src={a.cover} alt="" />
+      <img className="post__cover reveal" src={a.cover} alt="" style={{ objectPosition: a.coverPosition }} />
 
       <article className="post__body">
         {a.body.map((b, k) => {

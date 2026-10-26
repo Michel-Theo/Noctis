@@ -23,6 +23,8 @@
   bottom: 84px;
   max-width: 410px;
   font-size: 44px;
+  /* Posé sur la photo, sombre dans les deux thèmes : toujours clair. */
+  color: var(--primitive-os-100);
 }
 .auth__side {
   display: grid;
@@ -440,5 +442,14 @@
   }
   .certificate__facts {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Le logo de l'en-tête est posé sur la photo (sombre dans les deux thèmes) : toujours clair. */
+@media (min-width: 801px) {
+  html:has(.auth) .header:not(.header--solid) .header__logo {
+    --color-text-primary: var(--primitive-os-100);
+    --color-bg-primary: var(--primitive-nuit-950);
+    color: var(--primitive-os-100);
   }
 }
