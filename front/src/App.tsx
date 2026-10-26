@@ -1,40 +1,27 @@
-import { useCallback, useState } from 'react'
 import './App.css'
-import { useSmoothScroll, ScrollTrigger } from './lib/scroll'
-import { RingCanvas } from './three/RingCanvas'
-import { Loader } from './components/Loader'
+import './pages/product.css'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import { useSmoothScroll } from './lib/scroll'
 import { Header } from './components/Header'
 import { Cursor } from './components/Cursor'
-import { Hero } from './sections/Hero'
-import { Anatomie } from './sections/Anatomie'
-import { Forge } from './sections/Forge'
-import { Collection } from './sections/Collection'
-import { Rejoindre } from './sections/Rejoindre'
+import { PageTransition } from './components/PageTransition'
+import { HomePage } from './pages/HomePage'
+import { ProductPage } from './pages/ProductPage'
 
 export default function App() {
-  const [ready, setReady] = useState(false)
   useSmoothScroll()
-
-  const onLoaded = useCallback(() => {
-    setReady(true)
-    // Les hauteurs changent quand le chargeur disparaît : on recalcule les déclencheurs.
-    requestAnimationFrame(() => ScrollTrigger.refresh())
-  }, [])
 
   return (
     <>
-      {!ready && <Loader onDone={onLoaded} />}
       <Cursor />
-      <RingCanvas />
-      <div className="ring-vignette" aria-hidden="true" />
       <Header />
-      <main>
-        <Hero ready={ready} />
-        <Anatomie />
-        <Forge />
-        <Collection />
-        <Rejoindre />
-      </main>
+      {/* Avant les routes : ses effets doivent passer avant ceux de la page (transition FLIP). */}
+      <PageTransition />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/collection/:slug" element={<ProductPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </>
   )
 }

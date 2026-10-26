@@ -1,42 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { gsap, prefersReducedMotion } from '../lib/scroll'
-import { MiniRing } from '../three/MiniRing'
-
-type Product = { name: string; price: string; sub: string; img?: string }
-
-const PRODUCTS: Product[] = [
-  { name: 'Couronne I', price: '140,00 €', sub: 'Argent 925 rhodié · N° 001', img: '/img/couronne-i_34_nuit.png' },
-  { name: 'Couronne II', price: 'En forge', sub: 'Bientôt' },
-  { name: 'Spina', price: 'En forge', sub: 'Bientôt' },
-  { name: 'Vigile', price: 'En forge', sub: 'Bientôt' },
-]
-
-function Card({ p }: { p: Product }) {
-  const forge = !p.img
-  const [hover, setHover] = useState(false)
-  return (
-    <a
-      href={forge ? undefined : '#produit'}
-      className={['card', forge && 'card--forge', hover && 'card--hover'].filter(Boolean).join(' ')}
-      data-cursor={forge ? 'Bientôt' : 'Voir'}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      <div className="card__media">
-        <img src={p.img ?? '/img/couronne-i_face_nuit.png'} alt={forge ? '' : p.name} loading="lazy" />
-        {/* Au survol, l'image laisse place à la bague en 3D qui tourne. */}
-        {!forge && hover && !prefersReducedMotion() && <MiniRing />}
-      </div>
-      <div className="card__meta">
-        <div>
-          <p className="t-h3">{p.name}</p>
-          <p className="t-label-s">{p.sub}</p>
-        </div>
-        <p className={['t-label', !forge && 'card__price'].filter(Boolean).join(' ')}>{p.price}</p>
-      </div>
-    </a>
-  )
-}
+import { ProductCard } from '../components/ProductCard'
+import { PRODUCTS } from '../data/products'
 
 /** K4 — le scroll vertical devient un rail horizontal. */
 export function Collection() {
@@ -74,8 +39,8 @@ export function Collection() {
         <p className="t-label-s">01 — 04 &nbsp;&nbsp; Glisser →</p>
       </div>
       <div ref={rail} className="collection__rail">
-        {PRODUCTS.map((p) => (
-          <Card key={p.name} p={p} />
+        {PRODUCTS.slice(0, 4).map((p) => (
+          <ProductCard key={p.slug} p={p} />
         ))}
       </div>
     </section>

@@ -18,12 +18,21 @@ export const sceneState = {
   pointer: { x: 0, y: 0 },
 }
 
+let lenisInstance: Lenis | null = null
+
+/** Remonte en haut de page instantanément (changement de page). */
+export function scrollToTop() {
+  if (lenisInstance) lenisInstance.scrollTo(0, { immediate: true, force: true })
+  else window.scrollTo(0, 0)
+}
+
 /** Défilement doux Lenis branché sur le ticker GSAP (une seule boucle d'animation). */
 export function useSmoothScroll() {
   useEffect(() => {
     if (prefersReducedMotion()) return
 
     const lenis = new Lenis({ lerp: 0.1 })
+    lenisInstance = lenis
     lenis.on('scroll', ScrollTrigger.update)
     const tick = (time: number) => lenis.raf(time * 1000)
     gsap.ticker.add(tick)
@@ -32,6 +41,7 @@ export function useSmoothScroll() {
     return () => {
       gsap.ticker.remove(tick)
       lenis.destroy()
+      lenisInstance = null
     }
   }, [])
 

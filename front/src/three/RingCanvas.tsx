@@ -80,7 +80,7 @@ export function RingCanvas() {
   const [webgl] = useState(hasWebGL)
 
   // Repli : rendu Cycles fixe si WebGL est indisponible.
-  if (!webgl) return <img className="ring-canvas ring-fallback" src="/img/couronne-i_face_nuit.png" alt="" />
+  if (!webgl) return <img className="ring-canvas ring-fallback" src="/img/produit/face_nuit.webp" alt="" />
 
   return (
     <Canvas
