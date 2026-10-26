@@ -6,11 +6,13 @@ import { AdminDashboard } from './AdminDashboard'
 import { AdminOrders } from './AdminOrders'
 import { AdminProducts } from './AdminProducts'
 import { AdminProduct } from './AdminProduct'
+import { AdminEmails } from './AdminEmails'
 
 const NAV = [
   ['Tableau de bord', '/admin', true],
   ['Commandes', '/admin/commandes', false],
   ['Produits', '/admin/produits', false],
+  ['E-mails', '/admin/emails', false],
 ] as const
 
 /**
@@ -62,6 +64,7 @@ export function AdminApp() {
           <Route path="commandes" element={<AdminOrders />} />
           <Route path="produits" element={<AdminProducts />} />
           <Route path="produits/:slug" element={<AdminProduct />} />
+          <Route path="emails" element={<AdminEmails />} />
           <Route path="*" element={<Navigate to="/admin" replace />} />
         </Routes>
       </div>

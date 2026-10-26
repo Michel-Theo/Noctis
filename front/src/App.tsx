@@ -16,6 +16,7 @@ import { CheckoutPage } from './pages/checkout/CheckoutPage'
 import { PaymentPage } from './pages/checkout/PaymentPage'
 import { ConfirmationPage } from './pages/checkout/ConfirmationPage'
 import { AccountPage } from './pages/account/AccountPage'
+import { ForgotPasswordPage, ResetPasswordPage } from './pages/account/PasswordPages'
 import { CollectionPage } from './pages/vitrine/CollectionPage'
 import { AtelierPage } from './pages/vitrine/AtelierPage'
 import { JournalPage } from './pages/vitrine/JournalPage'
@@ -43,6 +44,8 @@ export default function App() {
         <Route path="/commande/paiement" element={<PaymentPage />} />
         <Route path="/commande/confirmation/:reference" element={<ConfirmationPage />} />
         <Route path="/compte" element={<AccountPage />} />
+        <Route path="/compte/mot-de-passe" element={<ForgotPasswordPage />} />
+        <Route path="/compte/reinitialiser" element={<ResetPasswordPage />} />
         <Route path="/collection" element={<CollectionPage />} />
         <Route path="/atelier" element={<AtelierPage />} />
         <Route path="/journal" element={<JournalPage />} />

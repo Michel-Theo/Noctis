@@ -1,0 +1,54 @@
+{# Composants partagés des e-mails. #}
+
+{% macro button(label, url) %}
+  <table role="presentation" cellpadding="0" cellspacing="0">
+    <tr><td><a class="btn" href="{{ url }}">{{ label }}</a></td></tr>
+  </table>
+{% endmacro %}
+
+{# Frise de fabrication : filet rouge sur les étapes faites, l'étape courante en accent. #}
+{% macro timeline(steps) %}
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      {% for s in steps %}
+        <td width="25%" valign="top" style="padding: 14px 8px 0 0; border-top: 2px solid {{ s.done ? '#9A1A24' : '#2A272B' }};">
+          <div class="label" style="color: {{ s.current ? '#D9464F' : (s.done ? '#E7E1D5' : '#8E8880') }};">{{ s.label }}</div>
+          <div class="label" style="padding-top: 4px; letter-spacing: 1px;">{{ s.done ? '' : '≈ ' }}{{ s.date|format_date(pattern: 'd MMM', locale: 'fr') }}</div>
+        </td>
+      {% endfor %}
+    </tr>
+  </table>
+{% endmacro %}
+
+{# Pièces commandées, avec leurs numéros dans la série. #}
+{% macro lines(order) %}
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    {% for item in order.items %}
+      <tr>
+        <td class="rule" style="padding: 18px 0;" valign="top">
+          <div class="heading" style="font-size: 18px;">{{ item.name }}{% if item.quantity > 1 %} ×&nbsp;{{ item.quantity }}{% endif %}</div>
+          <div class="label" style="padding-top: 6px;">{{ item.finish }} · Taille {{ item.size }}</div>
+          {% if item.serials is not empty %}
+            <div class="label accent" style="padding-top: 6px;">N°&nbsp;{% for n in item.serials %}{{ '%03d'|format(n) }}{{ not loop.last ? ', ' : '' }}{% endfor %}&nbsp;/&nbsp;{{ '%03d'|format(item.product.editionTotal) }}</div>
+          {% endif %}
+        </td>
+        <td class="rule mono" style="padding: 18px 0;" align="right" valign="top">{{ (item.total / 100)|format_currency('EUR', locale: 'fr') }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endmacro %}
+
+{# Récapitulatif chiffré. #}
+{% macro totals(order) %}
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr><td class="label rule" style="padding: 14px 0 6px;">Sous-total</td><td class="mono rule" align="right" style="padding: 14px 0 6px;">{{ (order.subtotal / 100)|format_currency('EUR', locale: 'fr') }}</td></tr>
+    {% if order.discount > 0 %}
+      <tr><td class="label" style="padding: 6px 0;">Code {{ order.discountCode }}</td><td class="mono" align="right" style="padding: 6px 0;">−{{ (order.discount / 100)|format_currency('EUR', locale: 'fr') }}</td></tr>
+    {% endif %}
+    <tr><td class="label" style="padding: 6px 0;">Livraison</td><td class="mono" align="right" style="padding: 6px 0;">{{ order.shippingCost ? (order.shippingCost / 100)|format_currency('EUR', locale: 'fr') : 'Offerte' }}</td></tr>
+    <tr>
+      <td class="label rule" style="padding: 16px 0 0; color: #E7E1D5;">Total TTC</td>
+      <td class="rule" align="right" style="padding: 12px 0 0; font-family: Syne, Arial, Helvetica, sans-serif; font-weight: 600; font-size: 24px; color: #D9464F;">{{ (order.total / 100)|format_currency('EUR', locale: 'fr') }}</td>
+    </tr>
+  </table>
+{% endmacro %}

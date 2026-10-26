@@ -1,0 +1,9 @@
+twig:
+    file_name_pattern: '*.twig'
+    globals:
+        # Adresse publique du site : liens et images des e-mails.
+        site: '%env(DEFAULT_URI)%'
+
+when@test:
+    twig:
+        strict_variables: true

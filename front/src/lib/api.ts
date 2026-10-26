@@ -165,6 +165,8 @@ export const api = {
   login: (email: string, password: string, remember: boolean) => call<User>('/auth/login', post({ email, password, remember })),
   logout: () => call<null>('/auth/logout', { method: 'POST' }),
   contact: (form: ContactForm) => call<{ ok: true }>('/contact', post(form)),
+  forgot: (email: string) => call<null>('/auth/forgot', post({ email })),
+  reset: (token: string, password: string) => call<null>('/auth/reset', post({ token, password })),
   me: () => call<User>('/me'),
   products: () => call<CatalogProduct[]>('/products'),
   admin: {
@@ -175,6 +177,8 @@ export const api = {
     csvUrl: (status: OrderFilter, q: string) => `/api/admin/orders.csv?status=${status}&q=${encodeURIComponent(q)}`,
     products: () => call<Pick<AdminProduct, 'slug' | 'name' | 'price' | 'published' | 'editionTotal' | 'editionSold'>[]>('/admin/products'),
     product: (slug: string) => call<AdminProduct>(`/admin/products/${slug}`),
+    emails: () => call<{ key: string; label: string; subject: string }[]>('/admin/emails'),
+    emailUrl: (key: string) => `/api/admin/emails/${key}`,
     saveProduct: (slug: string, data: Omit<AdminProduct, 'slug' | 'editionSold'>) =>
       call<AdminProduct>(`/admin/products/${slug}`, { method: 'PUT', body: JSON.stringify(data) }),
   },

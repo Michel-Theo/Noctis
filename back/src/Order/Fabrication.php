@@ -3,6 +3,7 @@
 namespace App\Order;
 
 use App\Entity\Order;
+use App\Mail\NoctisMailer;
 use App\Repository\OrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
@@ -13,6 +14,7 @@ final class Fabrication
     public function __construct(
         private readonly OrderRepository $orders,
         private readonly EntityManagerInterface $em,
+        private readonly NoctisMailer $mailer,
     ) {
     }
 
@@ -49,6 +51,10 @@ final class Fabrication
                 $order->advance();
             }
         });
+        // Le client est prévenu de chaque étape, une fois la transaction validée.
+        foreach ($found as $order) {
+            $this->mailer->fabricationStep($order);
+        }
 
         return $found;
     }

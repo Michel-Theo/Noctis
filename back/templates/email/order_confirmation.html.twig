@@ -1,0 +1,48 @@
+{% extends 'email/layout.html.twig' %}
+{% import 'email/_parts.html.twig' as parts %}
+
+{% block preheader %}Merci, {{ order.firstName }}. La fonte commence cette nuit.{% endblock %}
+
+{% block content %}
+  <tr>
+    <td class="panel pad" style="border-left: 2px solid #7A1018;">
+      <img src="{{ site }}/email/sigil.png" width="48" height="48" alt="" style="margin-bottom: 24px;">
+      <div class="label accent">Commande N°&nbsp;{{ order.reference }}</div>
+      <h1 class="title" style="padding-top: 14px;">Votre relique<br>est en route.</h1>
+      <p class="text" style="padding-top: 18px;">Merci, {{ order.firstName }}. La fonte commence cette nuit. Vous recevrez un e-mail à chaque étape&nbsp;: coulée, polissage, expédition.</p>
+    </td>
+  </tr>
+  <tr><td style="height: 16px;"></td></tr>
+  <tr>
+    <td class="panel pad">
+      <div class="label" style="padding-bottom: 6px;">Votre commande</div>
+      {{ parts.lines(order) }}
+      {{ parts.totals(order) }}
+    </td>
+  </tr>
+  <tr><td style="height: 16px;"></td></tr>
+  <tr>
+    <td class="panel pad">
+      <div class="label" style="padding-bottom: 18px;">Fabrication</div>
+      {{ parts.timeline(timeline) }}
+      <div style="padding-top: 32px;">{{ parts.button('Suivre ma commande', trackUrl) }}</div>
+    </td>
+  </tr>
+  <tr><td style="height: 16px;"></td></tr>
+  <tr>
+    <td class="panel pad">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="50%" valign="top">
+            <div class="label">Livraison</div>
+            <p class="text strong" style="padding-top: 8px; font-size: 15px; line-height: 23px;">{{ order.firstName }} {{ order.lastName }}<br>{{ order.address }}<br>{{ order.postalCode }} {{ order.city }}<br>{{ order.country }}</p>
+          </td>
+          <td width="50%" valign="top">
+            <div class="label">Mode</div>
+            <p class="text strong" style="padding-top: 8px; font-size: 15px; line-height: 23px;">{{ shipping }}<br><span style="color: #8E8880;">Fabrication 10&nbsp;jours, expédition suivie</span></p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+{% endblock %}

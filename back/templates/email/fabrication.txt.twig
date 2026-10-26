@@ -1,0 +1,18 @@
+NOCTIS — Commande N° {{ order.reference }}
+
+{{ title }}
+
+{{ order.firstName }}, {{ text|first|lower }}{{ text|slice(1) }}
+
+Fabrication :
+{% for s in timeline %}{{ s.done ? '[x]' : '[ ]' }} {{ s.label }}{{ s.current ? ' ← maintenant' : '' }}
+{% endfor %}
+
+{% for item in order.items %}- {{ item.name }} — {{ item.finish }}, taille {{ item.size }}{% if item.serials is not empty %} — N° {% for n in item.serials %}{{ '%03d'|format(n) }}{{ not loop.last ? ', ' : '' }}{% endfor %}{% endif %}
+{% endfor %}
+
+Suivre ma commande : {{ trackUrl }}
+
+—
+NOCTIS · Projet portfolio — aucune vente réelle
+{{ site }}
