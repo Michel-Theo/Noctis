@@ -29,11 +29,11 @@ ssh "$HOST" bash -s <<EOF
 set -euo pipefail
 cd $REMOTE
 # Le back est remplacé en gardant .env.local (secrets) et var/ (cache, journaux).
-rm -rf back.new && mkdir back.new && tar -xzf /tmp/back.tgz -C back.new
+sudo rm -rf back.new && mkdir back.new && tar -xzf /tmp/back.tgz -C back.new
 cp back/.env.local back.new/.env.local
-mkdir -p back.new/var && rm -rf back.old && { [ -d back ] && mv back back.old || true; } && mv back.new back
+mkdir -p back.new/var && sudo rm -rf back.old && { [ -d back ] && mv back back.old || true; } && mv back.new back
 rm -rf front.new && mkdir front.new && tar -xzf /tmp/front.tgz -C front.new
-rm -rf front.old && { [ -d front ] && mv front front.old || true; } && mv front.new front
+sudo rm -rf front.old && { [ -d front ] && mv front front.old || true; } && mv front.new front
 rm -f /tmp/front.tgz /tmp/back.tgz
 cd back
 php8.4 bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
@@ -41,6 +41,7 @@ sudo chgrp www-data .env.local && chmod 640 .env.local
 php8.4 bin/console cache:clear --no-warmup && php8.4 bin/console cache:warmup
 sudo chgrp -R www-data var && sudo chmod -R g+w var
 sudo systemctl reload php8.4-fpm
-rm -rf ../back.old ../front.old
+# Le cache de l'ancienne version appartient à www-data (PHP-FPM) : suppression en sudo.
+sudo rm -rf ../back.old ../front.old
 EOF
 echo "✓ En ligne : https://noctis.mmi24e13.mmi-troyes.fr"
