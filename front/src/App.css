@@ -437,8 +437,12 @@ html:not(.has-cursor) .cursor__ring {
   right: 0;
   width: 55%;
   height: 100%;
-  opacity: 0.55;
   z-index: 0;
+  /* Pleine exposition, comme la vue éclatée ; le bord gauche se fond pour laisser le texte lisible. */
+  mask-image: linear-gradient(to right, transparent 0%, #000 22%);
+}
+.forge__media .scroll-seq {
+  filter: brightness(1.12);
 }
 .forge__head,
 .forge__steps {
@@ -655,7 +659,8 @@ html:not(.has-cursor) .cursor__ring {
   }
   .forge__media {
     width: 100%;
-    opacity: 0.3;
+    opacity: 0.45;
+    mask-image: none;
   }
   /* Sur mobile, pas la place pour les légendes à droite de la pièce */
   .callouts {
