@@ -4,6 +4,8 @@ export type Product = {
   /** Prix en centimes ; null = pièce « en forge » (pas encore en vente). */
   price: number | null
   sub: string
+  /** Famille de pièce : filtre de la page Collection. */
+  type: 'bague' | 'chaine' | 'boucle'
   /** Visuel de carte (packshot Blender). Absent = carte floutée « en forge ». */
   card?: string
 }
@@ -23,12 +25,15 @@ export type ProductDetail = Product & {
 
 const IMG = '/img/produit'
 
+/** Ordre « Nouveautés » de la collection Nocturne. Seule Couronne I a son modèle 3D : les autres sont en forge. */
 export const PRODUCTS: Product[] = [
-  { slug: 'couronne-i', name: 'Couronne I', price: 14000, sub: 'Argent 925 rhodié · N° 001', card: `${IMG}/34_nuit.webp` },
-  { slug: 'couronne-ii', name: 'Couronne II', price: null, sub: 'Bientôt' },
-  { slug: 'spina', name: 'Spina', price: null, sub: 'Bientôt' },
-  { slug: 'vigile', name: 'Vigile', price: null, sub: 'Bientôt' },
-  { slug: 'chaine-veille', name: 'Chaîne Veille', price: null, sub: 'Bientôt' },
+  { slug: 'couronne-i', name: 'Couronne I', price: 14000, sub: 'Argent 925 rhodié · N° 001', type: 'bague', card: `${IMG}/34_nuit.webp` },
+  { slug: 'spina', name: 'Spina', price: null, sub: 'Bague · bientôt', type: 'bague' },
+  { slug: 'vigile', name: 'Vigile', price: null, sub: 'Bague · bientôt', type: 'bague' },
+  { slug: 'couronne-ii', name: 'Couronne II', price: null, sub: 'Bague · bientôt', type: 'bague' },
+  { slug: 'chaine-veille', name: 'Chaîne Veille', price: null, sub: 'Chaîne · bientôt', type: 'chaine' },
+  { slug: 'epine', name: 'Épine', price: null, sub: 'Boucle unique · bientôt', type: 'boucle' },
+  { slug: 'sceau', name: 'Sceau', price: null, sub: 'Chevalière · bientôt', type: 'bague' },
 ]
 
 export const DETAILS: Record<string, ProductDetail> = {

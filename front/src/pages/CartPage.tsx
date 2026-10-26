@@ -26,7 +26,7 @@ export function CartPage() {
         <Sigil size={120} className="cart-empty__sigil" />
         <h1 className="t-h1">Votre panier est vide</h1>
         <p className="t-body-l">La nuit est encore jeune.</p>
-        <Link to="/#collection" className="btn btn--secondary">
+        <Link to="/collection" className="btn btn--secondary">
           Découvrir la collection
         </Link>
       </main>

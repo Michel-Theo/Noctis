@@ -1,9 +1,10 @@
 import { useRef } from 'react'
+import { Link } from 'react-router-dom'
 
 const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/#*+'
 
 /** Lien du pied de page : brouillage des lettres au survol (0,3 s). */
-export function ScrambleLink({ children, href = '#' }: { children: string; href?: string }) {
+export function ScrambleLink({ children, to }: { children: string; to: string }) {
   const el = useRef<HTMLAnchorElement>(null)
   const raf = useRef(0)
 
@@ -25,8 +26,8 @@ export function ScrambleLink({ children, href = '#' }: { children: string; href?
   }
 
   return (
-    <a ref={el} href={href} className="t-label-s" onMouseEnter={scramble} aria-label={children}>
+    <Link ref={el} to={to} className="t-label-s" onMouseEnter={scramble} aria-label={children}>
       {children}
-    </a>
+    </Link>
   )
 }

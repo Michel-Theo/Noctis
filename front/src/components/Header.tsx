@@ -5,8 +5,8 @@ import { useCart } from '../lib/cart-context'
 import { gsap, prefersReducedMotion } from '../lib/scroll'
 
 const LINKS = [
-  ['Collection', '/#collection'],
-  ['Atelier', '/#atelier'],
+  ['Collection', '/collection'],
+  ['Atelier', '/atelier'],
   ['Journal', '/journal'],
   ['Compte', '/compte'],
 ] as const

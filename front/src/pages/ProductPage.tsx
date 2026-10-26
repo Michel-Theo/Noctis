@@ -111,7 +111,7 @@ export function ProductPage() {
 
         <div className="product__info">
           <nav className="t-label-s" aria-label="Fil d'Ariane">
-            <Link to="/#collection" className="link-draw">
+            <Link to="/collection" className="link-draw">
               Collection
             </Link>{' '}
             / Nocturne / {p.name}

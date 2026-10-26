@@ -67,7 +67,7 @@ function Dashboard() {
         {data && !data.current && !data.history.length && (
           <div className="account__empty">
             <p className="t-body-l">Aucune pièce commandée pour l'instant.</p>
-            <Link to="/#collection" className="btn btn--secondary">
+            <Link to="/collection" className="btn btn--secondary">
               Découvrir la collection
             </Link>
           </div>

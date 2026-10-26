@@ -62,6 +62,8 @@ export type Piece = { slug: string; name: string; finish: string; size: number; 
 
 export type AccountOrders = { current: AccountOrder | null; history: AccountOrder[]; pieces: Piece[] }
 
+export type ContactForm = { firstName: string; lastName: string; email: string; subject: 'commande' | 'sur-mesure' | 'autre'; message: string }
+
 export type Payment = { method: 'card' | 'applepay' | 'paypal'; cardNumber?: string; expiry?: string; cvc?: string }
 
 /** Erreur renvoyée par l'API : message lisible + éventuelles erreurs par champ. */
@@ -105,6 +107,7 @@ export const api = {
   register: (data: { email: string; password: string; firstName: string; lastName: string }) => call<User>('/auth/register', post(data)),
   login: (email: string, password: string, remember: boolean) => call<User>('/auth/login', post({ email, password, remember })),
   logout: () => call<null>('/auth/logout', { method: 'POST' }),
+  contact: (form: ContactForm) => call<{ ok: true }>('/contact', post(form)),
   me: () => call<User>('/me'),
   myOrders: () => call<AccountOrders>('/me/orders'),
   order: (reference: string, token: string) =>

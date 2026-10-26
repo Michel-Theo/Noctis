@@ -65,7 +65,7 @@ export function ConfirmationPage() {
         ))}
       </ol>
       <div className="confirm__actions">
-        <Link to="/#collection" className="t-label link-draw">
+        <Link to="/collection" className="t-label link-draw">
           Retour à la collection
         </Link>
       </div>
