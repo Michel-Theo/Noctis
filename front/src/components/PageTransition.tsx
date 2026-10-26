@@ -12,6 +12,7 @@ export function PageTransition() {
   const { pathname } = useLocation()
   const curtain = useRef<HTMLDivElement>(null)
   const first = useRef(true)
+  const prev = useRef(pathname)
 
   useLayoutEffect(() => {
     if (!window.location.hash) scrollToTop()
@@ -20,6 +21,10 @@ export function PageTransition() {
       return
     }
     requestAnimationFrame(() => ScrollTrigger.refresh())
+    // Entre deux étapes du tunnel : simple fondu de la page (CSS), pas de rideau.
+    const inCheckout = prev.current.startsWith('/commande') && pathname.startsWith('/commande')
+    prev.current = pathname
+    if (inCheckout) return
     const el = curtain.current
     // Depuis une carte, c'est l'agrandissement de la carte (FLIP) qui fait la transition.
     if (!el || prefersReducedMotion() || hasCardRect()) return

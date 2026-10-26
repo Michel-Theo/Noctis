@@ -13,7 +13,7 @@ import { Footer } from '../components/Footer'
 export function ProductPage() {
   const { slug = '' } = useParams()
   const p = DETAILS[slug]
-  const { add } = useCart()
+  const { add, setDrawer } = useCart()
   const root = useRef<HTMLDivElement>(null)
   const stage = useRef<HTMLDivElement>(null)
   const ghost = useRef<HTMLImageElement>(null)
@@ -75,6 +75,8 @@ export function ProductPage() {
   const addToCart = () => {
     add({ slug: p.slug, name: p.name, price: p.price!, size, finish, qty })
     setAdded(true)
+    // Le bouton se remplit (0,6 s), puis le tiroir glisse depuis la droite.
+    setTimeout(() => setDrawer(true), prefersReducedMotion() ? 0 : 650)
     setTimeout(() => setAdded(false), 2200)
   }
 

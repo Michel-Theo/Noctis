@@ -41,6 +41,9 @@ export function Header() {
     last.current = count
   }, [count])
 
+  // Tunnel d'achat : en-tête réduit (logo + étapes), pas de navigation pour ne pas distraire.
+  if (pathname.startsWith('/commande')) return <CheckoutHeader pathname={pathname} solid={solid} />
+
   return (
     <header className={['header', solid && 'header--solid'].filter(Boolean).join(' ')}>
       <Link to="/" className="header__logo" aria-label="NOCTIS — accueil">
@@ -77,6 +80,38 @@ export function Header() {
         </ul>
         <Sigil size={140} className="menu__sigil" />
       </div>
+    </header>
+  )
+}
+
+const STEPS = ['Informations', 'Livraison', 'Paiement']
+
+function CheckoutHeader({ pathname, solid }: { pathname: string; solid: boolean }) {
+  const confirmed = pathname.startsWith('/commande/confirmation')
+  const current = pathname === '/commande/paiement' ? 2 : 1
+  return (
+    <header className={['header', 'header--checkout', solid && 'header--solid'].filter(Boolean).join(' ')}>
+      <Link to="/" className="header__logo" aria-label="NOCTIS — accueil">
+        <Sigil size={28} />
+        <span className="header__wordmark">NOCTIS</span>
+      </Link>
+      {!confirmed && (
+        <ol className="steps" aria-label="Étapes de la commande">
+          {STEPS.map((s, i) => (
+            <li
+              key={s}
+              className={['t-label-s', i < current && 'is-done', i === current && 'is-current'].filter(Boolean).join(' ')}
+              aria-current={i === current ? 'step' : undefined}
+            >
+              0{i + 1} {s}
+            </li>
+          ))}
+        </ol>
+      )}
+      <span className="t-label-s header__secure">
+        {!confirmed && <span className="steps__count">{current + 1} / 3</span>}
+        <span className="steps__secure">Paiement sécurisé</span>
+      </span>
     </header>
   )
 }

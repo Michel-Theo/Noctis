@@ -26,6 +26,13 @@ export function scrollToTop() {
   else window.scrollTo(0, 0)
 }
 
+/** Gèle le défilement de la page (tiroir, modale) puis le rend. */
+export function lockScroll(locked: boolean) {
+  if (locked) lenisInstance?.stop()
+  else lenisInstance?.start()
+  document.documentElement.classList.toggle('scroll-locked', locked)
+}
+
 /** Défilement doux Lenis branché sur le ticker GSAP (une seule boucle d'animation). */
 export function useSmoothScroll() {
   useEffect(() => {
