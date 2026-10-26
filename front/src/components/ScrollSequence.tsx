@@ -45,6 +45,8 @@ export function ScrollSequence({ dir, count, width, height, poster, trigger, lab
       while (k > 0 && !frames[k]?.complete) k--
       const img = frames[k]?.complete && frames[k].naturalWidth ? frames[k] : posterImg
       if (!img.complete || k === drawn) return
+      // Les images ont un fond transparent : on efface avant de redessiner.
+      ctx.clearRect(0, 0, width, height)
       ctx.drawImage(img, 0, 0, width, height)
       drawn = k
     }

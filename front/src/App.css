@@ -311,6 +311,8 @@ html:not(.has-cursor) .cursor__ring {
 .forge__sticky {
   position: sticky;
   top: 0;
+  /* sticky crée un contexte d'empilement : il faut un fond pour que mix-blend-mode ait un arrière-plan */
+  background: var(--color-bg-primary);
   height: 100vh;
   display: grid;
   grid-template-columns: 1.2fr 1fr;
@@ -332,7 +334,12 @@ html:not(.has-cursor) .cursor__ring {
   width: auto;
   height: 100%;
   object-fit: contain;
-  /* Le fond studio du rendu se fond dans le noir de la page. */
+  /* Les images sont aplaties sur le noir de la page ; « lighten » efface l'écart de 1 niveau
+     introduit par la compression WebP, sans toucher au métal (plus clair que le fond). */
+  mix-blend-mode: lighten;
+}
+/* Ancien rendu avec fond studio : le fond se fondait dans le noir de la page. */
+.scroll-seq--studio {
   mask-image: radial-gradient(closest-side, #000 62%, transparent 100%);
 }
 .anatomie__text,
@@ -438,11 +445,8 @@ html:not(.has-cursor) .cursor__ring {
   width: 55%;
   height: 100%;
   z-index: 0;
-  /* Pleine exposition, comme la vue éclatée ; le bord gauche se fond pour laisser le texte lisible. */
-  mask-image: linear-gradient(to right, transparent 0%, #000 22%);
-}
-.forge__media .scroll-seq {
-  filter: brightness(1.12);
+  /* z-index crée un contexte d'empilement : fond requis pour le mix-blend-mode de la séquence */
+  background: var(--color-bg-primary);
 }
 .forge__head,
 .forge__steps {

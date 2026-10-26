@@ -44,7 +44,7 @@ export function Forge() {
             count={160}
             width={720}
             height={960}
-            poster="/img/couronne-i_forge_nuit.png"
+            poster="/img/forge_poster.webp"
             trigger={root}
             label="La bague passe du fil de fer au métal"
           />

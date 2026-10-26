@@ -75,7 +75,7 @@ export function Anatomie() {
               count={FRAMES}
               width={960}
               height={960}
-              poster="/img/couronne-i_eclatee_nuit.png"
+              poster="/img/eclatee_poster.webp"
               trigger={root}
               label="Vue éclatée de la bague Couronne I"
               onFrame={onFrame}
