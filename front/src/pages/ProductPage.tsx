@@ -115,7 +115,7 @@ export function ProductPage() {
             / Nocturne / {p.name}
           </nav>
           <div className="product__title">
-            <h1 className="t-display-l">{p.name}</h1>
+            <h1 className="t-display-l product__name">{p.name}</h1>
             <p>
               <span className="product__price">{formatPrice(p.price!)}</span> <span className="t-label-s">TVA incluse</span>
             </p>
