@@ -10,6 +10,8 @@ export const prefersReducedMotion = () =>
 
 /** État partagé entre le DOM (ScrollTrigger) et la scène 3D (useFrame). */
 export const sceneState = {
+  /** 0 → 1 au chargement : la bague sort du noir, la lumière rasante la balaie. */
+  intro: 0,
   /** 0 → 1 pendant le hero : la bague recule et pivote. */
   hero: 0,
   /** Pointeur normalisé (-1 → 1), lissé côté 3D. */

@@ -12,13 +12,19 @@ export function Cursor() {
     const lag = { ...pos }
     let raf = 0
 
-    const onMove = (e: PointerEvent) => {
-      pos.x = e.clientX
-      pos.y = e.clientY
-      const target = (e.target as HTMLElement).closest<HTMLElement>('[data-cursor]')
+    // Le contenu bouge aussi sous un curseur immobile (scroll) : on relit l'élément survolé.
+    const refresh = () => {
+      const hit = document.elementFromPoint(pos.x, pos.y) as HTMLElement | null
+      const target = hit?.closest<HTMLElement>('[data-cursor]')
       ring.current?.classList.toggle('cursor__ring--active', !!target)
       if (label.current) label.current.textContent = target?.dataset.cursor ?? ''
     }
+    const onMove = (e: PointerEvent) => {
+      pos.x = e.clientX
+      pos.y = e.clientY
+      refresh()
+    }
+    window.addEventListener('scroll', refresh, { passive: true })
     const loop = () => {
       lag.x += (pos.x - lag.x) * 0.15
       lag.y += (pos.y - lag.y) * 0.15
@@ -31,6 +37,7 @@ export function Cursor() {
     document.documentElement.classList.add('has-cursor')
     return () => {
       window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('scroll', refresh)
       cancelAnimationFrame(raf)
       document.documentElement.classList.remove('has-cursor')
     }

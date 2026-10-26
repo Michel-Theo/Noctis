@@ -5,6 +5,19 @@
   z-index: 0;
   pointer-events: none;
 }
+.ring-fallback {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+/* Vignette (post-process léger demandé par le système de motion) */
+.ring-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 45%, transparent 35%, rgb(11 10 12 / 0.85) 100%);
+}
 main,
 .header {
   position: relative;
@@ -21,13 +34,14 @@ main,
   justify-items: center;
   gap: var(--spacing-md);
   background: var(--color-bg-primary);
-  transition:
-    clip-path 0.9s var(--ease-reveal),
-    opacity 0.9s var(--ease-reveal);
-  clip-path: circle(150% at 50% 50%);
+  /* Ouverture en iris : un trou qui grandit depuis le centre révèle la scène 3D. */
+  --hole: 0px;
+  mask-image: radial-gradient(circle at 50% 50%, transparent var(--hole), #000 calc(var(--hole) + 1px));
 }
-.loader--leaving {
-  clip-path: circle(0% at 50% 50%);
+.loader .sigil {
+  position: relative;
+  z-index: 1;
+  will-change: transform;
 }
 .loader__count {
   font-variant-numeric: tabular-nums;
@@ -95,6 +109,10 @@ main,
 .has-cursor * {
   cursor: none !important;
 }
+html:not(.has-cursor) .cursor__dot,
+html:not(.has-cursor) .cursor__ring {
+  display: none;
+}
 .cursor__dot,
 .cursor__ring {
   position: fixed;
@@ -146,7 +164,6 @@ main,
   align-items: center;
   justify-content: space-between;
   padding: var(--spacing-lg) var(--spacing-2xl);
-  mix-blend-mode: difference;
 }
 .header__logo {
   display: flex;
@@ -182,9 +199,60 @@ main,
   color: var(--color-text-on-accent);
   font-size: 11px;
 }
-.header__theme {
-  border: 1px solid var(--color-border-strong);
-  padding: 4px 8px;
+.footer__theme {
+  border-bottom: 1px solid var(--color-border-strong);
+  white-space: nowrap;
+}
+.header__burger {
+  display: none;
+}
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  display: grid;
+  align-content: center;
+  padding: 0 20px;
+  background: var(--color-bg-primary);
+}
+.menu[hidden] {
+  display: none;
+}
+.menu ul {
+  list-style: none;
+  display: grid;
+  gap: var(--spacing-sm);
+}
+.menu li {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.6s var(--ease-reveal),
+    transform 0.6s var(--ease-reveal);
+}
+.menu--open li {
+  opacity: 1;
+  transform: none;
+}
+.menu a {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+.menu__link {
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.menu__sigil {
+  position: absolute;
+  right: 20px;
+  bottom: 120px;
+  opacity: 0.2;
+}
+.menu-open {
+  overflow: hidden;
 }
 
 /* ---------- Hero (K1) ---------- */
@@ -219,8 +287,9 @@ main,
 .hero__side {
   position: absolute;
   right: var(--spacing-2xl);
-  top: 50vh;
+  top: 30vh;
   writing-mode: vertical-rl;
+  rotate: 180deg;
 }
 .hero__cta {
   position: absolute;
@@ -269,31 +338,91 @@ main,
   gap: var(--spacing-lg);
   max-width: 460px;
 }
-.anatomie__parts {
-  list-style: none;
-  display: grid;
+/* Repères de la vue éclatée : calque calé sur le cadre exact de la vidéo (carré) */
+.anatomie__sticky {
+  grid-template-columns: 1.55fr 1fr;
 }
-.anatomie__part {
+.anatomie__media {
+  justify-items: start;
+}
+.anatomie__stage {
+  position: relative;
+  height: min(70%, 40vw);
+  aspect-ratio: 1;
+}
+.anatomie__stage .scrub-video {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+}
+.anatomie__lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.callout__line {
+  fill: none;
+  stroke: var(--color-text-secondary);
+  /* en unités du viewBox (100) : ≈ 1 px sur la scène ; pas de non-scaling-stroke qui casse le tracé animé */
+  stroke-width: 0.18;
+  stroke-dasharray: 1;
+}
+.callout__dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--color-accent-default);
+  box-shadow: 0 0 0 3px rgb(122 16 24 / 0.25);
+}
+.callout__label {
+  position: absolute;
   display: grid;
   gap: 2px;
-  padding: var(--spacing-sm) 0;
-  border-top: 1px solid var(--color-border-default);
+  white-space: nowrap;
 }
+
+/* La forge : manifeste en haut, étapes en ligne, bague en fond */
 .forge__sticky {
-  grid-template-columns: 1fr 1.1fr;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  align-items: start;
+  gap: var(--spacing-2xl);
+  padding-top: calc(var(--spacing-4xl) + var(--spacing-lg));
 }
 .forge__media {
-  order: 2;
-  opacity: 0.85;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 55%;
+  height: 100%;
+  opacity: 0.55;
+  z-index: 0;
+}
+.forge__head,
+.forge__steps {
+  position: relative;
+  z-index: 1;
 }
 .forge__manifeste {
-  max-width: 640px;
+  max-width: 900px;
+}
+.forge__line {
+  display: block;
 }
 .forge__steps {
+  grid-row: 3;
   list-style: none;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--spacing-lg);
+  max-width: 1000px;
+  padding-bottom: var(--spacing-2xl);
 }
 .forge__step {
   display: grid;
@@ -303,7 +432,13 @@ main,
 }
 .forge__num {
   color: var(--color-text-secondary);
-  font-size: 32px;
+  font-size: 56px;
+}
+.forge__desc {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  max-width: 280px;
 }
 
 /* ---------- Collection (K4) ---------- */
@@ -331,10 +466,25 @@ main,
   gap: var(--spacing-md);
   width: min(clamp(260px, 28vw, 400px), calc((100vh - 360px) * 400 / 440));
 }
+.card {
+  transform-origin: 50% 100%;
+}
 .card__media {
+  position: relative;
   aspect-ratio: 400 / 440;
   overflow: hidden;
   background: var(--color-bg-surface);
+}
+.mini-ring {
+  position: absolute !important;
+  inset: 0;
+  background: var(--color-bg-surface);
+  animation: fade-in 0.35s var(--ease-reveal);
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
 }
 .card__media img {
   width: 100%;
@@ -432,6 +582,20 @@ main,
   .header__link {
     display: none;
   }
+  .header__burger {
+    display: block;
+  }
+  .anatomie__media {
+    justify-items: center;
+  }
+  .anatomie__stage {
+    height: 100%;
+  }
+  .footer__nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-sm) var(--spacing-lg);
+  }
   .hero__title {
     left: 20px;
     right: 20px;
@@ -454,7 +618,12 @@ main,
     gap: var(--spacing-lg);
   }
   .forge__media {
-    order: 0;
+    width: 100%;
+    opacity: 0.3;
+  }
+  .anatomie__lines,
+  .callout {
+    display: none;
   }
   .forge__steps {
     grid-template-columns: 1fr;

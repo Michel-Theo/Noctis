@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap, prefersReducedMotion } from '../lib/scroll'
+import { MiniRing } from '../three/MiniRing'
 
 type Product = { name: string; price: string; sub: string; img?: string }
 
@@ -10,7 +11,34 @@ const PRODUCTS: Product[] = [
   { name: 'Vigile', price: 'En forge', sub: 'Bientôt' },
 ]
 
-/** K4 — le scroll vertical devient un rail horizontal. */
+function Card({ p }: { p: Product }) {
+  const forge = !p.img
+  const [hover, setHover] = useState(false)
+  return (
+    <a
+      href={forge ? undefined : '#produit'}
+      className={['card', forge && 'card--forge', hover && 'card--hover'].filter(Boolean).join(' ')}
+      data-cursor={forge ? 'Bientôt' : 'Voir'}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <div className="card__media">
+        <img src={p.img ?? '/img/couronne-i_face_nuit.png'} alt={forge ? '' : p.name} loading="lazy" />
+        {/* Au survol, l'image laisse place à la bague en 3D qui tourne. */}
+        {!forge && hover && !prefersReducedMotion() && <MiniRing />}
+      </div>
+      <div className="card__meta">
+        <div>
+          <p className="t-h3">{p.name}</p>
+          <p className="t-label-s">{p.sub}</p>
+        </div>
+        <p className={['t-label', !forge && 'card__price'].filter(Boolean).join(' ')}>{p.price}</p>
+      </div>
+    </a>
+  )
+}
+
+/** K4 — le scroll vertical devient un rail horizontal ; les cartes s'inclinent selon la vitesse. */
 export function Collection() {
   const root = useRef<HTMLElement>(null)
   const rail = useRef<HTMLDivElement>(null)
@@ -20,6 +48,7 @@ export function Collection() {
     const ctx = gsap.context(() => {
       const r = rail.current!
       const distance = () => r.scrollWidth - window.innerWidth + 96
+      const skew = gsap.quickTo('.card', 'skewX', { duration: 0.6, ease: 'power3.out' })
       gsap.to(r, {
         x: () => -distance(),
         ease: 'none',
@@ -30,6 +59,8 @@ export function Collection() {
           pin: true,
           scrub: 1,
           invalidateOnRefresh: true,
+          onUpdate: (self) => skew(gsap.utils.clamp(-6, 6, -self.getVelocity() / 400)),
+          onScrubComplete: () => skew(0),
         },
       })
     }, root)
@@ -46,28 +77,9 @@ export function Collection() {
         <p className="t-label-s">01 — 04 &nbsp;&nbsp; Glisser →</p>
       </div>
       <div ref={rail} className="collection__rail">
-        {PRODUCTS.map((p) => {
-          const forge = !p.img
-          return (
-            <a
-              key={p.name}
-              href={forge ? undefined : '#produit'}
-              className={['card', forge && 'card--forge'].filter(Boolean).join(' ')}
-              data-cursor={forge ? 'Bientôt' : 'Voir'}
-            >
-              <div className="card__media">
-                <img src={p.img ?? '/img/couronne-i_face_nuit.png'} alt={forge ? '' : p.name} loading="lazy" />
-              </div>
-              <div className="card__meta">
-                <div>
-                  <p className="t-h3">{p.name}</p>
-                  <p className="t-label-s">{p.sub}</p>
-                </div>
-                <p className={['t-label', !forge && 'card__price'].filter(Boolean).join(' ')}>{p.price}</p>
-              </div>
-            </a>
-          )
-        })}
+        {PRODUCTS.map((p) => (
+          <Card key={p.name} p={p} />
+        ))}
       </div>
     </section>
   )

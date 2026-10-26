@@ -122,14 +122,12 @@ video {
   font-size: clamp(56px, 12vw, 180px);
   line-height: 1;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 .t-display-l {
   font-family: var(--font-display);
   font-size: clamp(32px, 4vw, 56px);
   line-height: 1.05;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
 }
 .t-h1 {
   font-family: var(--font-heading);
@@ -182,6 +180,40 @@ video {
 .btn--primary {
   background: var(--color-accent-default);
   color: var(--color-text-on-accent);
+}
+/* Le libellé glisse vers le haut et son double prend sa place. */
+.btn__label {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+.btn__label > span {
+  display: inline-block;
+  transition: transform 0.35s var(--ease-reveal);
+}
+.btn__label::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 100%;
+  white-space: nowrap;
+  transition: transform 0.35s var(--ease-reveal);
+}
+.btn:hover .btn__label > span,
+.btn:hover .btn__label::after {
+  transform: translateY(-100%);
+}
+/* Lien : soulignement qui se trace de gauche à droite */
+.link-draw {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: left bottom;
+  background-repeat: no-repeat;
+  padding-bottom: 2px;
+  transition: background-size 0.35s var(--ease-reveal);
+}
+.link-draw:hover {
+  background-size: 100% 1px;
 }
 .btn--primary::before {
   content: '';

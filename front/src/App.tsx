@@ -26,6 +26,7 @@ export default function App() {
       {!ready && <Loader onDone={onLoaded} />}
       <Cursor />
       <RingCanvas />
+      <div className="ring-vignette" aria-hidden="true" />
       <Header />
       <main>
         <Hero ready={ready} />

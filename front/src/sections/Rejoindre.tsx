@@ -1,24 +1,49 @@
 import { useEffect, useRef, useState } from 'react'
-import { gsap } from '../lib/scroll'
+import { gsap, ScrollTrigger, prefersReducedMotion } from '../lib/scroll'
 import { Sigil } from '../components/Sigil'
+import { Button } from '../components/Button'
+import { ScrambleLink } from '../components/ScrambleLink'
 
 /** K5 — newsletter ; le sigil se regrave et le NOCTIS géant monte en parallaxe. */
 export function Rejoindre() {
   const root = useRef<HTMLElement>(null)
   const [sent, setSent] = useState(false)
   const [drawn, setDrawn] = useState(false)
+  const [theme, setTheme] = useState<'nuit' | 'os'>('nuit')
 
   useEffect(() => {
+    const st = ScrollTrigger.create({ trigger: root.current, start: 'top 60%', once: true, onEnter: () => setDrawn(true) })
+    if (prefersReducedMotion()) return () => st.kill()
     const ctx = gsap.context(() => {
-      gsap.fromTo('.rejoindre__giant', { yPercent: 40 }, {
-        yPercent: 0,
-        ease: 'none',
-        scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'bottom bottom', scrub: true },
+      gsap.fromTo(
+        '.rejoindre__giant',
+        { yPercent: 40 },
+        {
+          yPercent: 0,
+          ease: 'none',
+          scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'bottom bottom', scrub: true },
+        },
+      )
+      gsap.from('.rejoindre > h2, .rejoindre__sub, .rejoindre__form', {
+        opacity: 0,
+        y: 24,
+        duration: 1.2,
+        ease: 'expo.out',
+        stagger: 0.08,
+        scrollTrigger: { trigger: root.current, start: 'top 55%' },
       })
-      gsap.timeline({ scrollTrigger: { trigger: root.current, start: 'top 60%', onEnter: () => setDrawn(true) } })
     }, root)
-    return () => ctx.revert()
+    return () => {
+      st.kill()
+      ctx.revert()
+    }
   }, [])
+
+  const toggleTheme = () => {
+    const next = theme === 'nuit' ? 'os' : 'nuit'
+    document.documentElement.dataset.theme = next
+    setTheme(next)
+  }
 
   return (
     <section ref={root} className="rejoindre">
@@ -38,9 +63,7 @@ export function Rejoindre() {
           E-mail
         </label>
         <input id="email" type="email" required placeholder="votre@email.com" className="rejoindre__input" />
-        <button className="btn btn--primary" type="submit">
-          {sent ? 'Vous êtes des nôtres' : "S'inscrire"}
-        </button>
+        <Button type="submit">{sent ? 'Vous êtes des nôtres' : "S'inscrire"}</Button>
       </form>
       <p className="rejoindre__giant t-display-xl" aria-hidden="true">
         NOCTIS
@@ -49,10 +72,11 @@ export function Rejoindre() {
         <p className="t-label-s">© 2026 NOCTIS · Projet portfolio</p>
         <nav className="footer__nav" aria-label="Pied de page">
           {['Instagram', 'Mentions légales', 'CGV', 'Contact'].map((l) => (
-            <a key={l} href="#" className="t-label-s">
-              {l}
-            </a>
+            <ScrambleLink key={l}>{l}</ScrambleLink>
           ))}
+          <button className="t-label-s footer__theme" onClick={toggleTheme} aria-pressed={theme === 'os'}>
+            Thème : {theme === 'nuit' ? 'Nuit' : 'Os'}
+          </button>
         </nav>
       </footer>
     </section>
