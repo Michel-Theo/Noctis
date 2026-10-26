@@ -128,3 +128,47 @@ Routes `/api/admin/*`, réservées à `ROLE_ADMIN` : 401 sans session, 403 `{err
 - Variables dans `.env.local` (jamais commité) : `APP_ENV=prod`, `APP_SECRET`, `DATABASE_URL` vers la base MariaDB du serveur.
 - `composer install --no-dev --optimize-autoloader`, puis `php bin/console doctrine:migrations:migrate -n`.
 - Nginx sert le front (`front/dist`) et relaie `/api` vers PHP-FPM (`public/index.php`) : même domaine, pas de CORS.
+
+## E-mails
+
+E-mails HTML aux couleurs de la marque (gabarits Twig dans `templates/email/`, CSS inliné, version texte pour chacun) :
+
+| E-mail | Envoyé quand |
+|---|---|
+| Confirmation de commande | le paiement réussit |
+| Suivi de fabrication (coulée, polie, expédiée, livrée) | une commande avance d'une étape (back-office ou `app:order:advance`) |
+| Mot de passe oublié | `POST /api/auth/forgot` |
+| Contact : message à l'atelier (Répondre → client) + accusé au client | `POST /api/contact` |
+
+Un envoi raté est journalisé et n'interrompt jamais l'action (paiement, avance, message).
+
+### Variables
+
+| Variable | Rôle | Défaut |
+|---|---|---|
+| `MAILER_DSN` | transport | `null://null` (rien n'est envoyé) |
+| `MAILER_FROM` | expéditeur | `NOCTIS <atelier@noctis.example>` |
+| `CONTACT_TO` | boîte qui reçoit le formulaire Contact | `atelier@noctis.example` |
+| `DEFAULT_URI` | adresse du site (liens et images des e-mails) | `http://localhost` ; `http://localhost:5173` en dev |
+
+Envoi réel avec Gmail : `composer require symfony/google-mailer`, créer un « mot de passe d'application » sur le compte Google, puis dans `.env.local` :
+
+```sh
+MAILER_DSN=gmail+smtp://ADRESSE%40gmail.com:MOT_DE_PASSE_APPLICATION@default
+MAILER_FROM="NOCTIS <ADRESSE@gmail.com>"
+```
+
+Avec un autre fournisseur : `MAILER_DSN=smtp://UTILISATEUR:MOT_DE_PASSE@smtp.exemple.fr:587`.
+
+### Mot de passe oublié
+
+| Méthode | Route | Rôle |
+|---|---|---|
+| POST | `/api/auth/forgot` | `{email}` → 204 toujours (ne révèle pas si le compte existe). 3 demandes / 15 min par IP, sinon 429 |
+| POST | `/api/auth/reset` | `{token, password}` → 204. Lien invalide, expiré (1 h) ou déjà utilisé → 422 `violations.token` |
+
+Le lien contient un sélecteur et un vérificateur ; seul le hachage SHA-256 du vérificateur est stocké (`reset_password_request`).
+
+### Aperçus (back-office)
+
+`GET /api/admin/emails` liste les 8 e-mails ; `GET /api/admin/emails/{clé}` renvoie le HTML rendu avec des données d'exemple (dernière commande réglée, sinon une commande construite en mémoire ; rien n'est écrit en base).

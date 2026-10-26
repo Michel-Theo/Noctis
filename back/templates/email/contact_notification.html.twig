@@ -1,0 +1,15 @@
+{% extends 'email/layout.html.twig' %}
+
+{% block preheader %}{{ message.message|slice(0, 90) }}{% endblock %}
+
+{% block content %}
+  <tr>
+    <td class="panel pad" style="border-left: 2px solid #7A1018;">
+      <div class="label accent">Formulaire de contact · {{ subject }}</div>
+      <h1 class="heading" style="padding-top: 14px; font-size: 24px; line-height: 32px;">{{ name }}</h1>
+      <p class="label" style="margin: 0; padding-top: 6px; text-transform: none; letter-spacing: 1px;"><a href="mailto:{{ message.email }}" style="color: #8E8880;">{{ message.email }}</a> · {{ message.createdAt|format_datetime(pattern: "d MMMM yyyy 'à' HH'h'mm", locale: 'fr') }}</p>
+      <div class="quote" style="margin-top: 24px;">{{ message.message }}</div>
+      <p class="label" style="margin: 0; padding-top: 28px;">Répondez directement à cet e-mail&nbsp;: la réponse part chez {{ message.firstName }}.</p>
+    </td>
+  </tr>
+{% endblock %}
