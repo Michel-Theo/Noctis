@@ -1,0 +1,7 @@
+framework:
+    rate_limiter:
+        # Formulaire de contact : 3 messages par tranche de 10 minutes et par adresse IP.
+        contact:
+            policy: sliding_window
+            limit: 3
+            interval: '10 minutes'
