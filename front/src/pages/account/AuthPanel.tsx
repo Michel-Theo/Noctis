@@ -54,7 +54,7 @@ export function AuthPanel() {
   return (
     <main className="auth">
       <div className="auth__visual">
-        <img src="/img/compte_nuit.webp" alt="" />
+        <img src="/img/compte_mains.webp" alt="" />
         <p className="t-h1 auth__quote">«&nbsp;Bon retour parmi les veilleurs.&nbsp;»</p>
       </div>
       <div className="auth__side">

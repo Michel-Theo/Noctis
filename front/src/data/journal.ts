@@ -20,7 +20,7 @@ export type Article = {
 }
 
 const IMG = '/img/produit'
-const NUIT = '/img/vitrine/nuit_large.webp'
+const NUIT = '/img/vitrine/mains_large.webp'
 
 export const ARTICLES: Article[] = [
   {
