@@ -1,14 +1,25 @@
 # NOCTIS — API
 
-API JSON de la boutique (Symfony 8.1, Doctrine, SQLite). Elle recalcule chaque panier côté serveur, crée les commandes et simule le paiement.
+API JSON de la boutique (Symfony 8.1, Doctrine, MariaDB). Elle recalcule chaque panier côté serveur, crée les commandes et simule le paiement.
 
 ## Installation
 
-Prérequis : PHP 8.4 avec les extensions intl, mbstring, openssl, curl, zip, fileinfo, sodium, pdo_sqlite et sqlite3, plus Composer.
+Prérequis :
+- PHP 8.4 avec les extensions intl, mbstring, openssl, curl, zip, fileinfo, sodium et pdo_mysql ;
+- Composer ;
+- MariaDB, avec les bases `noctis` et `noctis_test` et un utilisateur `noctis` (mot de passe `noctis` en local).
+
+```sql
+CREATE DATABASE noctis CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE noctis_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'noctis'@'localhost' IDENTIFIED BY 'noctis';
+GRANT ALL PRIVILEGES ON noctis.* TO 'noctis'@'localhost';
+GRANT ALL PRIVILEGES ON noctis_test.* TO 'noctis'@'localhost';
+```
 
 ```sh
 composer install
-php bin/console doctrine:migrations:migrate -n   # crée var/data.db
+php bin/console doctrine:migrations:migrate -n   # crée les tables
 php bin/console doctrine:fixtures:load -n        # catalogue (5 pièces, seule Couronne I en vente)
 php -S 127.0.0.1:8000 -t public                  # ou : symfony serve
 ```
@@ -21,7 +32,7 @@ En développement, le front (Vite) relaie `/api` vers `127.0.0.1:8000`.
 php bin/phpunit
 ```
 
-Les tests fonctionnels (`tests/Api`) recréent une base SQLite de test (`var/test.db`) à chaque test.
+Les tests fonctionnels (`tests/Api`) recréent le schéma de la base `noctis_test` à chaque test.
 
 ## Contrat
 
@@ -36,6 +47,7 @@ Tous les montants sont en centimes, TVA incluse. Les erreurs sont toujours en JS
 | POST | `/api/quote` | `{items:[{slug, finish, size, quantity}], shipping?, code?}`. Renvoie les lignes et les totaux (`subtotal, shipping, discount, tax, total`) |
 | POST | `/api/orders` | Client + adresse + `shipping` + `items` + `code?`. Renvoie en 201 `{reference, token, total, status}` |
 | POST | `/api/orders/{ref}/pay?token=…` | `{method: card\|applepay\|paypal, cardNumber?, expiry? (MM/AA), cvc?}`. Renvoie la commande payée |
+| POST | `/api/orders/{ref}/code?token=…` | `{code}` (vide ou `null` pour retirer). Recalcule une commande en attente ; 409 si elle est réglée |
 | GET | `/api/orders/{ref}?token=…` | Commande, avec sa frise de fabrication (`timeline`) |
 
 ### Règles du panier
@@ -48,12 +60,13 @@ Tous les montants sont en centimes, TVA incluse. Les erreurs sont toujours en JS
 - Le panier est refusé en 422 si :
   - une pièce est inconnue ou encore en forge ;
   - la finition ou la taille n'est pas proposée ;
-  - la quantité n'est pas comprise entre 1 et 5.
+  - la quantité n'est pas comprise entre 1 et 5 ;
+  - le panier compte plus de dix lignes.
 
 ### Commandes et paiement
 
 - Une commande n'est lisible et payable qu'avec son `token` ; sans le bon jeton, l'API répond 404.
-- Une commande déjà réglée répond 409.
+- Une commande déjà réglée répond 409. Le paiement réserve d'abord la commande par une mise à jour conditionnelle (`pending` → `processing`) : deux paiements simultanés ne peuvent pas passer tous les deux.
 - Paiement **simulé**, calqué sur les cartes de test Stripe :
 
   | Carte | Résultat |
@@ -64,3 +77,9 @@ Tous les montants sont en centimes, TVA incluse. Les erreurs sont toujours en JS
 
   Apple Pay et PayPal sont acceptés directement.
 - Le paiement passe par l'interface `App\Payment\PaymentGateway`. Brancher Stripe revient à écrire une autre implémentation.
+
+## Mise en production (VPS)
+
+- Variables dans `.env.local` (jamais commité) : `APP_ENV=prod`, `APP_SECRET`, `DATABASE_URL` vers la base MariaDB du serveur.
+- `composer install --no-dev --optimize-autoloader`, puis `php bin/console doctrine:migrations:migrate -n`.
+- Nginx sert le front (`front/dist`) et relaie `/api` vers PHP-FPM (`public/index.php`) : même domaine, pas de CORS.
