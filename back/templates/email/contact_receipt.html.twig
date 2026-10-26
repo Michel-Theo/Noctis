@@ -5,7 +5,7 @@
 {% block content %}
   <tr>
     <td class="panel pad" style="border-left: 2px solid #7A1018;">
-      <img src="{{ site }}/email/sigil.png" width="48" height="48" alt="" style="margin-bottom: 24px;">
+      <img src="{{ email.image('@images/sigil.png') }}" width="48" height="48" alt="" style="margin-bottom: 24px;">
       <div class="label accent">Contact · {{ subject }}</div>
       <h1 class="title" style="padding-top: 14px;">Message<br>reçu.</h1>
       <p class="text" style="padding-top: 18px;">Merci, {{ message.firstName }}. L’atelier vous répond sous 48&nbsp;heures, souvent la nuit.</p>

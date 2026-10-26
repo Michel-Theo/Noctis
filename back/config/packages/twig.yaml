@@ -1,5 +1,8 @@
 twig:
     file_name_pattern: '*.twig'
+    paths:
+        # Logos joints aux e-mails (cid:…) : ils s'affichent sans dépendre de l'adresse du site.
+        '%kernel.project_dir%/assets/email': images
     globals:
         # Adresse publique du site : liens et images des e-mails.
         site: '%env(DEFAULT_URI)%'
