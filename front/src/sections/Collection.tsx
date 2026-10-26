@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react'
 import { gsap, prefersReducedMotion } from '../lib/scroll'
 import { ProductCard } from '../components/ProductCard'
-import { PRODUCTS } from '../data/products'
+import { useCatalog } from '../lib/catalog'
 
 /** K4 — le scroll vertical devient un rail horizontal. */
 export function Collection() {
   const root = useRef<HTMLElement>(null)
   const rail = useRef<HTMLDivElement>(null)
+  const catalog = useCatalog()
 
   useEffect(() => {
     if (prefersReducedMotion()) return
@@ -39,7 +40,7 @@ export function Collection() {
         <p className="t-label-s">01 — 04 &nbsp;&nbsp; Glisser →</p>
       </div>
       <div ref={rail} className="collection__rail">
-        {PRODUCTS.slice(0, 4).map((p) => (
+        {catalog.slice(0, 4).map((p) => (
           <ProductCard key={p.slug} p={p} />
         ))}
       </div>

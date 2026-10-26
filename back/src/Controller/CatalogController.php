@@ -21,9 +21,12 @@ final class CatalogController extends AbstractController
             'slug' => $p->getSlug(),
             'name' => $p->getName(),
             'collection' => $p->getCollection(),
+            'pitch' => $p->getPitch(),
             'price' => $p->getPrice(),
+            'published' => $p->isPublished(),
             'available' => $p->isAvailable(),
             'editionTotal' => $p->getEditionTotal(),
+            'editionSold' => $p->getEditionSold(),
             'finishes' => $p->getFinishes(),
             'sizes' => $p->getSizes(),
         ], $products->findBy([], ['id' => 'ASC'])));

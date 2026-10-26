@@ -41,6 +41,8 @@ export function Header() {
     last.current = count
   }, [count])
 
+  // Back-office : il a sa propre barre latérale.
+  if (pathname.startsWith('/admin')) return null
   // Tunnel d'achat : en-tête réduit (logo + étapes), pas de navigation pour ne pas distraire.
   if (pathname.startsWith('/commande')) return <CheckoutHeader pathname={pathname} solid={solid} />
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { formatPrice } from '../../data/products'
 import { api, type AccountOrder, type AccountOrders, type Piece } from '../../lib/api'
 import { useAuth } from '../../lib/auth-context'
@@ -15,6 +15,9 @@ const names = (o: AccountOrder) => [...new Set(o.lines.map((l) => l.name))].join
 /** /compte : connexion si personne n'est connecté, sinon les commandes (maquettes 35:58 et M11). */
 export function AccountPage() {
   const { user } = useAuth()
+  // Connexion demandée par le back-office : on y retourne une fois connecté (chemin interne uniquement).
+  const next = useSearchParams()[0].get('next')
+  if (user && next?.startsWith('/admin')) return <Navigate to={next} replace />
   if (user === undefined) return <main className="account" aria-busy="true" />
   if (!user) return <AuthPanel />
   return <Dashboard />

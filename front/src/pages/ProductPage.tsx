@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { DETAILS, PRODUCTS, formatPrice } from '../data/products'
+import { formatPrice } from '../data/products'
+import { useCatalog, useProductDetail } from '../lib/catalog'
 import { useCart } from '../lib/cart-context'
 import { gsap, prefersReducedMotion } from '../lib/scroll'
 import { takeCardRect } from '../lib/transition'
@@ -12,14 +13,16 @@ import { Footer } from '../components/Footer'
 
 export function ProductPage() {
   const { slug = '' } = useParams()
-  const p = DETAILS[slug]
+  // Prix, accroche, tailles et disponibilité : données vivantes du back-office.
+  const p = useProductDetail(slug)
+  const catalog = useCatalog()
   const { add, setDrawer } = useCart()
   const root = useRef<HTMLDivElement>(null)
   const stage = useRef<HTMLDivElement>(null)
   const ghost = useRef<HTMLImageElement>(null)
   const [view, setView] = useState('3d')
-  const [finish, setFinish] = useState(p?.finishes[0] ?? '')
-  const [size, setSize] = useState(p?.defaultSize ?? 0)
+  const [pickedFinish, setFinish] = useState('')
+  const [pickedSize, setSize] = useState(0)
   const [qty, setQty] = useState(1)
   const [guide, setGuide] = useState(false)
   const [added, setAdded] = useState(false)
@@ -70,9 +73,14 @@ export function ProductPage() {
 
   const price = formatPrice((p.price ?? 0) * qty)
   const media = p.gallery.find((g) => g.id === view)
-  const related = p.related.map((s) => PRODUCTS.find((x) => x.slug === s)!).filter(Boolean)
+  const related = p.related.map((s) => catalog.find((x) => x.slug === s)!).filter(Boolean)
+  // Choix encore valides après une modification du back-office, sinon les valeurs par défaut.
+  const finish = p.finishes.includes(pickedFinish) ? pickedFinish : p.finishes[0]
+  const size = p.sizes.includes(pickedSize) ? pickedSize : p.defaultSize
+  const available = p.price !== null
 
   const addToCart = () => {
+    if (!available) return
     add({ slug: p.slug, name: p.name, price: p.price!, size, finish, qty })
     setAdded(true)
     // Le bouton se remplit (0,6 s), puis le tiroir glisse depuis la droite.
@@ -119,7 +127,7 @@ export function ProductPage() {
           <div className="product__title">
             <h1 className="t-display-l product__name">{p.name}</h1>
             <p>
-              <span className="product__price">{formatPrice(p.price!)}</span> <span className="t-label-s">TVA incluse</span>
+              <span className="product__price">{available ? formatPrice(p.price!) : 'Indisponible'}</span> <span className="t-label-s">TVA incluse</span>
             </p>
           </div>
           <p className="t-body-l">{p.pitch}</p>

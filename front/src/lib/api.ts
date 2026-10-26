@@ -42,7 +42,64 @@ export type Order = Omit<Quote, 'freeShippingFrom' | 'code'> & {
   timeline: OrderStep[]
 }
 
-export type User = { email: string; firstName: string; lastName: string; createdAt: string }
+export type User = { email: string; firstName: string; lastName: string; createdAt: string; admin?: boolean }
+
+/** Catalogue public : ce que le back-office peut modifier. */
+export type CatalogProduct = {
+  slug: string
+  name: string
+  collection: string
+  pitch: string | null
+  price: number | null
+  published: boolean
+  available: boolean
+  editionTotal: number
+  editionSold: number
+  finishes: string[]
+  sizes: number[]
+}
+
+export type AdminStatus = 'paid' | 'cast' | 'polished' | 'shipped' | 'delivered'
+
+export type AdminOrder = {
+  reference: string
+  token: string
+  paidAt: string
+  customer: string
+  email: string
+  items: { slug: string; name: string; quantity: number; size: number; finish: string; serials: number[] }[]
+  status: AdminStatus
+  statusLabel: string
+  total: number
+}
+
+export type Dashboard = {
+  month: string
+  revenue: number
+  revenueDelta: number | null
+  orders: number
+  inProduction: number
+  averageBasket: number
+  averageBasketDelta: number | null
+  series: { slug: string; name: string; sold: number; total: number }[]
+  monthly: { month: string; revenue: number; orders: number }[]
+  production: { paid: number; cast: number; polished: number; shipped: number }
+  latest: AdminOrder[]
+}
+
+export type OrderFilter = 'all' | 'paid' | 'production' | 'shipped' | 'delivered'
+
+export type AdminProduct = {
+  slug: string
+  name: string
+  pitch: string | null
+  price: number | null
+  published: boolean
+  editionTotal: number
+  editionSold: number
+  sizes: number[]
+  finishes: string[]
+}
 
 export type AccountStep = OrderStep & { current: boolean }
 
@@ -109,6 +166,18 @@ export const api = {
   logout: () => call<null>('/auth/logout', { method: 'POST' }),
   contact: (form: ContactForm) => call<{ ok: true }>('/contact', post(form)),
   me: () => call<User>('/me'),
+  products: () => call<CatalogProduct[]>('/products'),
+  admin: {
+    dashboard: (month?: string) => call<Dashboard>(`/admin/dashboard${month ? `?month=${month}` : ''}`),
+    orders: (status: OrderFilter, q: string) =>
+      call<{ counts: Record<OrderFilter, number>; orders: AdminOrder[] }>(`/admin/orders?status=${status}&q=${encodeURIComponent(q)}`),
+    advance: (references: string[]) => call<{ orders: AdminOrder[] }>('/admin/orders/advance', post({ references })),
+    csvUrl: (status: OrderFilter, q: string) => `/api/admin/orders.csv?status=${status}&q=${encodeURIComponent(q)}`,
+    products: () => call<Pick<AdminProduct, 'slug' | 'name' | 'price' | 'published' | 'editionTotal' | 'editionSold'>[]>('/admin/products'),
+    product: (slug: string) => call<AdminProduct>(`/admin/products/${slug}`),
+    saveProduct: (slug: string, data: Omit<AdminProduct, 'slug' | 'editionSold'>) =>
+      call<AdminProduct>(`/admin/products/${slug}`, { method: 'PUT', body: JSON.stringify(data) }),
+  },
   myOrders: () => call<AccountOrders>('/me/orders'),
   order: (reference: string, token: string) =>
     call<Order>(`/orders/${encodeURIComponent(reference)}?token=${encodeURIComponent(token)}`),

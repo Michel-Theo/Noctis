@@ -6,6 +6,7 @@ const LINKS = [
   ['Contact', '/contact'],
   ['Mentions légales', '/informations/mentions-legales'],
   ['CGV', '/informations/cgv'],
+  ['Back-office', '/admin'],
 ] as const
 
 export function Footer() {

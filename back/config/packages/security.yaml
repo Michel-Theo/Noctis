@@ -17,6 +17,7 @@ security:
             lazy: true
             provider: app_users
             entry_point: App\Security\JsonEntryPoint
+            access_denied_handler: App\Security\JsonAccessDeniedHandler
             json_login:
                 check_path: api_auth_login
                 username_path: email
@@ -37,6 +38,7 @@ security:
 
     access_control:
         - { path: ^/api/me, roles: ROLE_USER }
+        - { path: ^/api/admin, roles: ROLE_ADMIN }
 
 when@test:
     security:

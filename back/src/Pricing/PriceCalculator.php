@@ -29,7 +29,10 @@ final class PriceCalculator
 
         foreach ($items as $item) {
             $product = $catalog[$item->slug] ?? throw new PricingException(\sprintf('Pièce inconnue : %s.', $item->slug));
-            if (!$product->isAvailable()) {
+            if (!$product->isPublished()) {
+                throw new PricingException(\sprintf('%s n\'est pas en vente.', $product->getName()));
+            }
+            if (null === $product->getPrice()) {
                 throw new PricingException(\sprintf('%s est encore en forge.', $product->getName()));
             }
             if (!\in_array($item->finish, $product->getFinishes(), true)) {

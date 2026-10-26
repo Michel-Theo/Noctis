@@ -45,7 +45,8 @@ final class AccountTest extends ApiTestCase
 
         [$status, $me] = $this->api('GET', '/me');
         self::assertSame(200, $status);
-        self::assertSame(['email', 'firstName', 'lastName', 'createdAt'], array_keys($me));
+        self::assertSame(['email', 'firstName', 'lastName', 'createdAt', 'admin'], array_keys($me));
+        self::assertFalse($me['admin']);
     }
 
     public function testRegisterRefusesTakenEmailAndShortPassword(): void

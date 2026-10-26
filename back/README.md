@@ -43,7 +43,7 @@ Tous les montants sont en centimes, TVA incluse. Les erreurs sont toujours en JS
 
 | Méthode | Route | Rôle |
 |---|---|---|
-| GET | `/api/products` | Catalogue : `slug, name, collection, price, available, editionTotal, finishes, sizes` |
+| GET | `/api/products` | Catalogue : `slug, name, collection, pitch, price, published, available, editionTotal, editionSold, finishes, sizes` (`available` = publiée, avec un prix, pas épuisée) |
 | POST | `/api/quote` | `{items:[{slug, finish, size, quantity}], shipping?, code?}`. Renvoie les lignes et les totaux (`subtotal, shipping, discount, tax, total`) |
 | POST | `/api/orders` | Client + adresse + `shipping` + `items` + `code?`. Renvoie en 201 `{reference, token, total, status}` |
 | POST | `/api/orders/{ref}/pay?token=…` | `{method: card\|applepay\|paypal, cardNumber?, expiry? (MM/AA), cvc?}`. Renvoie la commande payée |
@@ -96,15 +96,32 @@ Session par cookie (pare-feu `main`), sur le même domaine que le front.
 - Série limitée : les numéros (N° 001 / 150…) sont attribués au paiement, sous verrou sur la ligne produit. Si la série s'épuise pendant le paiement, l'API répond 409 et la commande redevient payable.
 - CSRF : le cookie de session est `SameSite=Lax` et les routes n'acceptent que du JSON. Un formulaire d'un autre site ne peut donc pas agir au nom du client.
 
-**Compte de démo** (chargé par les fixtures) : `theo@exemple.fr` / `veilleur-2026`. Il a deux commandes livrées et une en cours de polissage, pièces N° 1 à 3.
+**Compte de démo** (chargé par les fixtures) : `theo@exemple.fr` / `veilleur-2026`. C'est à la fois un client (deux commandes livrées, une en fabrication) et l'administrateur de l'atelier (`ROLE_ADMIN`).
 
-**Faire avancer une commande** (en attendant le back-office) :
+**Faire avancer une commande** en ligne de commande (même règle que le back-office) :
 
 ```sh
 php bin/console app:order:advance NX-2026-0003   # payée → coulée → polie → expédiée → livrée
 ```
 
-Les références suivent l'identifiant en base : après un `fixtures:load`, qui purge sans remettre le compteur à zéro, les numéros de démo peuvent dépasser 0003.
+Les références suivent l'identifiant en base : après un `fixtures:load`, qui purge sans remettre le compteur à zéro, les numéros de démo changent.
+
+## Back-office
+
+Routes `/api/admin/*`, réservées à `ROLE_ADMIN` : 401 sans session, 403 `{error: "Accès réservé à l'atelier."}` pour un client. `GET /api/me` et la connexion renvoient `admin: bool`.
+
+| Méthode | Route | Rôle |
+|---|---|---|
+| GET | `/api/admin/dashboard?month=AAAA-MM` | Chiffres du mois (CA, évolution, commandes, panier moyen), séries vendues, ventes sur 6 mois, fabrication en cours, 5 dernières commandes |
+| GET | `/api/admin/orders?status=all\|paid\|production\|shipped\|delivered&q=` | `{counts, orders}` : commandes réglées, recherche sur référence, nom, e-mail (200 au plus) |
+| POST | `/api/admin/orders/advance` | `{references: [...]}` : fait avancer chaque commande d'une étape. Tout ou rien : une référence inconnue ou livrée → 422, rien n'est modifié |
+| GET | `/api/admin/orders.csv?status=&q=` | Export tableur : UTF-8 avec BOM, séparateur `;` (s'ouvre tel quel dans Excel) |
+| GET | `/api/admin/products` | Liste : `slug, name, price, published, editionTotal, editionSold` |
+| GET / PUT | `/api/admin/products/{slug}` | Fiche : `name, pitch, price, published, editionTotal, sizes, finishes`. Publier sans prix → 422 ; série plus courte que les ventes → 422 |
+
+- Seules les commandes réglées comptent, datées par leur paiement. Statuts vus de l'atelier : À couler, Coulée, Polissage, Expédiée, Livrée.
+- Une pièce dépubliée disparaît de la vente : le devis répond « … n'est pas en vente. ».
+- Les fixtures sont déterministes (graine fixe) : une trentaine de clients, ~40 commandes de Couronne I de mai à octobre 2026, lancement le 12 septembre, série vendue à 43 / 150.
 
 ## Mise en production (VPS)
 

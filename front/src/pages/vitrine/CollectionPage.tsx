@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { PRODUCTS, type Product } from '../../data/products'
+import { type Product } from '../../data/products'
+import { useCatalog } from '../../lib/catalog'
 import { ProductCard } from '../../components/ProductCard'
 import { Footer } from '../../components/Footer'
 import { useReveal } from '../../lib/useReveal'
@@ -25,14 +26,15 @@ export function CollectionPage() {
   const [family, setFamily] = useState<(typeof FAMILIES)[number]['id']>('tout')
   const [onlyAvailable, setOnlyAvailable] = useState(false)
   const [sort, setSort] = useState<Sort>('nouveautes')
+  const catalog = useCatalog()
 
   const pieces = useMemo(() => {
-    const list = PRODUCTS.filter((p) => (family === 'tout' || p.type === family) && (!onlyAvailable || p.price !== null))
+    const list = catalog.filter((p) => (family === 'tout' || p.type === family) && (!onlyAvailable || p.price !== null))
     if (sort === 'nouveautes') return list
     // Les pièces en forge, sans prix, restent en fin de liste.
     const price = (p: Product) => p.price ?? (sort === 'prix-asc' ? Infinity : -Infinity)
     return [...list].sort((a, b) => (sort === 'prix-asc' ? price(a) - price(b) : price(b) - price(a)))
-  }, [family, onlyAvailable, sort])
+  }, [catalog, family, onlyAvailable, sort])
 
   useReveal(root)
 
@@ -47,7 +49,7 @@ export function CollectionPage() {
       <div className="filters">
         <div className="tags" role="group" aria-label="Famille">
           {FAMILIES.map((f) => {
-            const n = f.id === 'tout' ? PRODUCTS.length : PRODUCTS.filter((p) => p.type === f.id).length
+            const n = f.id === 'tout' ? catalog.length : catalog.filter((p) => p.type === f.id).length
             return (
               <button key={f.id} className={['tag', family === f.id && 'tag--on'].filter(Boolean).join(' ')} aria-pressed={family === f.id} onClick={() => setFamily(f.id)}>
                 {f.label} <span className="filters__count">· {n}</span>

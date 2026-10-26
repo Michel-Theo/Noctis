@@ -18,6 +18,14 @@ class Product
     #[ORM\Column(options: ['default' => 0])]
     private int $editionSold = 0;
 
+    /** Accroche affichée sur la fiche produit. */
+    #[ORM\Column(type: Types::TEXT)]
+    private string $pitch = '';
+
+    /** Visible et vendable sur le site ; une pièce dépubliée est refusée au devis. */
+    #[ORM\Column(options: ['default' => true])]
+    private bool $published = true;
+
     /**
      * @param list<string> $finishes
      * @param list<int>    $sizes
@@ -66,9 +74,42 @@ class Product
         return $this->price;
     }
 
+    /** En vente : publiée, avec un prix, et pas encore épuisée. */
     public function isAvailable(): bool
     {
-        return null !== $this->price;
+        return $this->published && null !== $this->price && $this->getRemaining() > 0;
+    }
+
+    public function getPitch(): string
+    {
+        return $this->pitch;
+    }
+
+    public function setPitch(string $pitch): void
+    {
+        $this->pitch = $pitch;
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->published;
+    }
+
+    /**
+     * Mise à jour depuis le back-office.
+     *
+     * @param list<int>    $sizes
+     * @param list<string> $finishes
+     */
+    public function update(string $name, string $pitch, ?int $price, bool $published, int $editionTotal, array $sizes, array $finishes): void
+    {
+        $this->name = $name;
+        $this->pitch = $pitch;
+        $this->price = $price;
+        $this->published = $published;
+        $this->editionTotal = $editionTotal;
+        $this->sizes = $sizes;
+        $this->finishes = $finishes;
     }
 
     public function getEditionTotal(): int

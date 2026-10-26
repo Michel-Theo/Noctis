@@ -22,6 +22,7 @@ final class AppFixtures extends Fixture
             new Product('vigile', 'Vigile', 'Nocturne', null, 150, $finishes, $sizes),
             new Product('chaine-veille', 'Chaîne Veille', 'Nocturne', null, 150, ['Argent 925'], []),
         ];
+        $catalog[0]->setPitch('Quatre griffes en crochet referment l\'anneau autour d\'un poignard central. Une pièce sculpturale, pensée comme une relique à porter chaque nuit.');
         foreach ($catalog as $p) {
             $manager->persist($p);
         }
