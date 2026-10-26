@@ -1,22 +1,39 @@
-import { useEffect, useRef } from 'react'
-import { gsap, prefersReducedMotion } from '../lib/scroll'
-import { ScrubVideo } from '../components/ScrubVideo'
+import { useCallback, useEffect, useRef } from 'react'
+import { gsap } from '../lib/scroll'
+import { ScrollSequence } from '../components/ScrollSequence'
+import TRACK from './eclatee-track.json'
 
 /**
- * Repères posés sur la vue éclatée : point (x, y) sur la pièce → légende (lx, ly),
- * en % du cadre de la vidéo (relevés sur l'image la plus ouverte, frame 88).
+ * Repères numérotés de haut en bas. Chaque point suit sa pièce image par image :
+ * les positions (en % du cadre) ont été projetées depuis la caméra Blender pour les 160 images
+ * de l'animation — le point reste collé à la pièce quand la bague s'ouvre puis se referme.
  */
 const CALLOUTS = [
-  // Légendes rangées dans l'ordre vertical des points : les traits ne se croisent pas.
-  { n: '04', t: 'Argent 925', d: 'rhodié, imprimé puis coulé', x: 53, y: 18, lx: 106, ly: 20 },
-  { n: '03', t: 'Anneau', d: 'Ø intérieur 18 mm · taille 57', x: 34, y: 44, lx: 106, ly: 38 },
-  { n: '01', t: 'Poignard', d: 'pièce centrale, 9 mm', x: 66, y: 50, lx: 106, ly: 56 },
-  { n: '02', t: 'Griffes ×4', d: 'lames en crochet', x: 61, y: 82, lx: 106, ly: 74 },
-]
+  { n: '01', t: 'Griffes ×4', d: 'lames en crochet', ly: 20 },
+  { n: '02', t: 'Anneau', d: 'Ø intérieur 18 mm · taille 57', ly: 38 },
+  { n: '03', t: 'Poignard', d: 'pièce centrale, 9 mm', ly: 56 },
+  { n: '04', t: 'Argent 925', d: 'rhodié, imprimé puis coulé', ly: 74 },
+] as const
+const LX = 106
+const FRAMES = 160
+// Visibles quand les pièces commencent à s'écarter, masqués une fois la bague refermée.
+const SHOW_FROM = 36
+const SHOW_TO = 140
 
-/** K2 — la bague s'ouvre en vue éclatée au fil du scroll ; les repères se tracent vers leurs légendes. */
+const track = TRACK as Record<string, number[][]>
+
+function at(n: string, f: number) {
+  const a = track[n]
+  const i = Math.min(FRAMES - 2, Math.max(0, Math.floor(f)))
+  const t = Math.min(1, Math.max(0, f - i))
+  return [a[i][0] + (a[i + 1][0] - a[i][0]) * t, a[i][1] + (a[i + 1][1] - a[i][1]) * t]
+}
+
+/** K2 — la bague s'ouvre en vue éclatée au fil du scroll ; les repères suivent les pièces. */
 export function Anatomie() {
   const root = useRef<HTMLElement>(null)
+  const layer = useRef<HTMLDivElement>(null)
+  const shown = useRef(false)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -28,21 +45,24 @@ export function Anatomie() {
         stagger: 0.08,
         scrollTrigger: { trigger: root.current, start: 'top 60%' },
       })
-      if (prefersReducedMotion()) return
-      // Les repères apparaissent quand la bague est ouverte, puis disparaissent quand elle se referme.
-      const tl = gsap.timeline({
-        scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom bottom', scrub: 1 },
-      })
-      tl.set('.callout', { opacity: 0 })
-        .to({}, { duration: 0.3 })
-        .to('.callout', { opacity: 1, duration: 0.01 })
-        .fromTo('.callout__dot', { scale: 0 }, { scale: 1, stagger: 0.03, duration: 0.05 })
-        .fromTo('.callout__line', { strokeDashoffset: 1 }, { strokeDashoffset: 0, stagger: 0.03, duration: 0.08 }, '<')
-        .fromTo('.callout__label', { opacity: 0, x: -8 }, { opacity: 1, x: 0, stagger: 0.03, duration: 0.06 }, '<0.04')
-        .to({}, { duration: 0.25 })
-        .to('.callout', { opacity: 0, duration: 0.08 })
     }, root)
     return () => ctx.revert()
+  }, [])
+
+  const onFrame = useCallback((f: number) => {
+    const el = layer.current
+    if (!el) return
+    for (const c of CALLOUTS) {
+      const [x, y] = at(c.n, f)
+      el.querySelector<HTMLElement>(`[data-dot="${c.n}"]`)?.style.setProperty('left', `${x}%`)
+      el.querySelector<HTMLElement>(`[data-dot="${c.n}"]`)?.style.setProperty('top', `${y}%`)
+      el.querySelector(`[data-line="${c.n}"]`)?.setAttribute('points', `${x},${y} ${LX - 3},${c.ly + 1.5} ${LX - 1},${c.ly + 1.5}`)
+    }
+    const show = f >= SHOW_FROM && f <= SHOW_TO
+    if (show !== shown.current) {
+      shown.current = show
+      el.classList.toggle('callouts--on', show)
+    }
   }, [])
 
   return (
@@ -50,33 +70,34 @@ export function Anatomie() {
       <div className="anatomie__sticky">
         <div className="anatomie__media">
           <div className="anatomie__stage">
-          <ScrubVideo
-            src="/video/couronne-i_eclatee_nuit.mp4"
-            poster="/img/couronne-i_eclatee_nuit.png"
-            trigger={root}
-            label="Vue éclatée de la bague Couronne I"
-          />
-          <svg className="anatomie__lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            {CALLOUTS.map((c) => (
-              <polyline
-                key={c.n}
-                className="callout callout__line"
-                points={`${c.x},${c.y} ${c.lx - 3},${c.ly + 1.5} ${c.lx - 1},${c.ly + 1.5}`}
-                pathLength={1}
-              />
-            ))}
-          </svg>
-          {CALLOUTS.map((c) => (
-            <div key={c.n} className="callout" aria-hidden="true">
-              <span className="callout__dot" style={{ left: `${c.x}%`, top: `${c.y}%` }} />
-              <span className="callout__label" style={{ left: `${c.lx}%`, top: `${c.ly}%` }}>
-                <span className="t-label">
-                  {c.n} · {c.t}
-                </span>
-                <span className="t-label-s">{c.d}</span>
-              </span>
+            <ScrollSequence
+              dir="/seq/eclatee_nuit"
+              count={FRAMES}
+              width={960}
+              height={960}
+              poster="/img/couronne-i_eclatee_nuit.png"
+              trigger={root}
+              label="Vue éclatée de la bague Couronne I"
+              onFrame={onFrame}
+            />
+            <div ref={layer} className="callouts" aria-hidden="true">
+              <svg className="anatomie__lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+                {CALLOUTS.map((c) => (
+                  <polyline key={c.n} data-line={c.n} className="callout__line" pathLength={1} />
+                ))}
+              </svg>
+              {CALLOUTS.map((c, i) => (
+                <div key={c.n} className="callout" style={{ '--i': i } as React.CSSProperties}>
+                  <span data-dot={c.n} className="callout__dot" />
+                  <span className="callout__label" style={{ left: `${LX}%`, top: `${c.ly}%` }}>
+                    <span className="t-label">
+                      {c.n} · {c.t}
+                    </span>
+                    <span className="t-label-s">{c.d}</span>
+                  </span>
+                </div>
+              ))}
             </div>
-          ))}
           </div>
         </div>
         <div className="anatomie__text">

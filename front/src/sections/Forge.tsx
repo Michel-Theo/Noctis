@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { gsap, prefersReducedMotion } from '../lib/scroll'
-import { ScrubVideo } from '../components/ScrubVideo'
+import { ScrollSequence } from '../components/ScrollSequence'
 
 const MANIFESTE = ['Nous ne fabriquons pas des bagues.', 'Nous forgeons des reliques', 'pour ceux qui veillent.']
 const STEPS = [
@@ -39,8 +39,11 @@ export function Forge() {
     <section ref={root} id="atelier" className="forge">
       <div className="forge__sticky">
         <div className="forge__media" aria-hidden="true">
-          <ScrubVideo
-            src="/video/couronne-i_forge_nuit.mp4"
+          <ScrollSequence
+            dir="/seq/forge_nuit"
+            count={160}
+            width={720}
+            height={960}
             poster="/img/couronne-i_forge_nuit.png"
             trigger={root}
             label="La bague passe du fil de fer au métal"

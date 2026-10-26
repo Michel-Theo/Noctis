@@ -38,7 +38,7 @@ function Card({ p }: { p: Product }) {
   )
 }
 
-/** K4 — le scroll vertical devient un rail horizontal ; les cartes s'inclinent selon la vitesse. */
+/** K4 — le scroll vertical devient un rail horizontal. */
 export function Collection() {
   const root = useRef<HTMLElement>(null)
   const rail = useRef<HTMLDivElement>(null)
@@ -48,7 +48,6 @@ export function Collection() {
     const ctx = gsap.context(() => {
       const r = rail.current!
       const distance = () => r.scrollWidth - window.innerWidth + 96
-      const skew = gsap.quickTo('.card', 'skewX', { duration: 0.6, ease: 'power3.out' })
       gsap.to(r, {
         x: () => -distance(),
         ease: 'none',
@@ -59,8 +58,6 @@ export function Collection() {
           pin: true,
           scrub: 1,
           invalidateOnRefresh: true,
-          onUpdate: (self) => skew(gsap.utils.clamp(-6, 6, -self.getVelocity() / 400)),
-          onScrubComplete: () => skew(0),
         },
       })
     }, root)
