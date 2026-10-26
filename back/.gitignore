@@ -1,0 +1,23 @@
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
+
+# Bases SQLite locales
+*.db
+
+# Défauts Symfony commités (aucun secret) ; les vrais secrets vont dans .env.local
+!.env
+!.env.dev
+!.env.test
