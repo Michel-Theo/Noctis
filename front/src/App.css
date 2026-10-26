@@ -120,13 +120,15 @@ html:not(.has-cursor) .cursor__ring {
   left: 0;
   z-index: 200;
   pointer-events: none;
+  /* Clair + différence : le curseur s'inverse selon ce qu'il survole, lisible sur tous les fonds et dans les deux thèmes. */
+  mix-blend-mode: difference;
 }
 .cursor__dot {
   width: 6px;
   height: 6px;
   margin: -3px 0 0 -3px;
   border-radius: 50%;
-  background: var(--color-text-primary);
+  background: var(--primitive-os-100);
 }
 .cursor__ring {
   display: grid;
@@ -134,8 +136,9 @@ html:not(.has-cursor) .cursor__ring {
   width: 32px;
   height: 32px;
   margin: -16px 0 0 -16px;
-  border: 1px solid var(--color-text-primary);
+  border: 1px solid var(--primitive-os-100);
   border-radius: 50%;
+  color: var(--primitive-os-100);
   transition:
     width 0.35s var(--ease-reveal),
     height 0.35s var(--ease-reveal),
@@ -337,6 +340,10 @@ html:not(.has-cursor) .cursor__ring {
   /* Les images sont aplaties sur le noir de la page ; « lighten » efface l'écart de 1 niveau
      introduit par la compression WebP, sans toucher au métal (plus clair que le fond). */
   mix-blend-mode: lighten;
+}
+/* Thème Os : images aplaties sur le fond clair, « darken » joue le même rôle que « lighten » en Nuit. */
+[data-theme='os'] .scroll-seq {
+  mix-blend-mode: darken;
 }
 /* Ancien rendu avec fond studio : le fond se fondait dans le noir de la page. */
 .scroll-seq--studio {

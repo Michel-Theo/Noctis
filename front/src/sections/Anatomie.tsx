@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import { gsap } from '../lib/scroll'
 import { ScrollSequence } from '../components/ScrollSequence'
 import TRACK from './eclatee-track.json'
+import { useTheme } from '../lib/theme'
 
 /**
  * Repères numérotés de haut en bas. Chaque point suit sa pièce image par image :
@@ -31,6 +32,7 @@ function at(n: string, f: number) {
 
 /** K2 — la bague s'ouvre en vue éclatée au fil du scroll ; les repères suivent les pièces. */
 export function Anatomie() {
+  const theme = useTheme()
   const root = useRef<HTMLElement>(null)
   const layer = useRef<HTMLDivElement>(null)
   const shown = useRef(false)
@@ -71,11 +73,11 @@ export function Anatomie() {
         <div className="anatomie__media">
           <div className="anatomie__stage">
             <ScrollSequence
-              dir="/seq/eclatee_nuit"
+              dir={`/seq/eclatee_${theme}`}
               count={FRAMES}
               width={960}
               height={960}
-              poster="/img/eclatee_poster.webp"
+              poster={theme === 'os' ? '/img/eclatee_poster_os.webp' : '/img/eclatee_poster.webp'}
               trigger={root}
               label="Vue éclatée de la bague Couronne I"
               onFrame={onFrame}

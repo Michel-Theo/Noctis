@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { gsap, prefersReducedMotion } from '../lib/scroll'
 import { ScrollSequence } from '../components/ScrollSequence'
+import { useTheme } from '../lib/theme'
 
 const MANIFESTE = ['Nous ne fabriquons pas des bagues.', 'Nous forgeons des reliques', 'pour ceux qui veillent.']
 const STEPS = [
@@ -14,6 +15,7 @@ const STEPS = [
  * pendant que les trois étapes se lisent l'une après l'autre (section pinnée).
  */
 export function Forge() {
+  const theme = useTheme()
   const root = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -40,11 +42,11 @@ export function Forge() {
       <div className="forge__sticky">
         <div className="forge__media" aria-hidden="true">
           <ScrollSequence
-            dir="/seq/forge_nuit"
+            dir={`/seq/forge_${theme}`}
             count={160}
             width={720}
             height={960}
-            poster="/img/forge_poster.webp"
+            poster={theme === 'os' ? '/img/forge_poster_os.webp' : '/img/forge_poster.webp'}
             trigger={root}
             label="La bague passe du fil de fer au métal"
           />
