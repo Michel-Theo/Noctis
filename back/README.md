@@ -20,7 +20,7 @@ GRANT ALL PRIVILEGES ON noctis_test.* TO 'noctis'@'localhost';
 ```sh
 composer install
 php bin/console doctrine:migrations:migrate -n   # crée les tables
-php bin/console doctrine:fixtures:load -n        # catalogue (5 pièces, seule Couronne I en vente)
+php bin/console doctrine:fixtures:load -n        # catalogue + compte de démo (voir « Comptes »)
 php -S 127.0.0.1:8000 -t public                  # ou : symfony serve
 ```
 
@@ -61,7 +61,8 @@ Tous les montants sont en centimes, TVA incluse. Les erreurs sont toujours en JS
   - une pièce est inconnue ou encore en forge ;
   - la finition ou la taille n'est pas proposée ;
   - la quantité n'est pas comprise entre 1 et 5 ;
-  - le panier compte plus de dix lignes.
+  - le panier compte plus de dix lignes ;
+  - la série limitée n'a plus assez de pièces (« Couronne I : plus que 2 pièces dans la série. », « … est épuisée. »).
 
 ### Commandes et paiement
 
@@ -77,6 +78,33 @@ Tous les montants sont en centimes, TVA incluse. Les erreurs sont toujours en JS
 
   Apple Pay et PayPal sont acceptés directement.
 - Le paiement passe par l'interface `App\Payment\PaymentGateway`. Brancher Stripe revient à écrire une autre implémentation.
+
+## Comptes
+
+Session par cookie (pare-feu `main`), sur le même domaine que le front.
+
+| Méthode | Route | Rôle |
+|---|---|---|
+| POST | `/api/auth/register` | `{email, password (≥ 8), firstName, lastName}` → 201 + compte, déjà connecté. E-mail pris → 422 |
+| POST | `/api/auth/login` | `{email, password, remember?}` → 200 + compte ; 401 si refusé ; 429 après 5 essais par minute |
+| POST | `/api/auth/logout` | 204 |
+| GET | `/api/me` | Compte connecté `{email, firstName, lastName, createdAt}`, sinon 401 |
+| GET | `/api/me/orders` | `{current, history, pieces}` : commande en cours (frise en 5 étapes), historique, pièces numérotées |
+
+- `"remember": true` pose un cookie `REMEMBERME` valable un an.
+- Une commande passée connecté rejoint le compte. Une commande invité n'est jamais rattachée par e-mail : sans vérification de l'adresse, ce serait une fuite.
+- Série limitée : les numéros (N° 001 / 150…) sont attribués au paiement, sous verrou sur la ligne produit. Si la série s'épuise pendant le paiement, l'API répond 409 et la commande redevient payable.
+- CSRF : le cookie de session est `SameSite=Lax` et les routes n'acceptent que du JSON. Un formulaire d'un autre site ne peut donc pas agir au nom du client.
+
+**Compte de démo** (chargé par les fixtures) : `theo@exemple.fr` / `veilleur-2026`. Il a deux commandes livrées et une en cours de polissage, pièces N° 1 à 3.
+
+**Faire avancer une commande** (en attendant le back-office) :
+
+```sh
+php bin/console app:order:advance NX-2026-0003   # payée → coulée → polie → expédiée → livrée
+```
+
+Les références suivent l'identifiant en base : après un `fixtures:load`, qui purge sans remettre le compteur à zéro, les numéros de démo peuvent dépasser 0003.
 
 ## Mise en production (VPS)
 

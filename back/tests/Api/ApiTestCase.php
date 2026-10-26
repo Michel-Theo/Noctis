@@ -24,6 +24,8 @@ abstract class ApiTestCase extends WebTestCase
         $tool->dropSchema($meta);
         $tool->createSchema($meta);
         (new AppFixtures())->load($em);
+        // Le limiteur de connexion est stocké sur disque : on repart de zéro à chaque test.
+        static::getContainer()->get('cache.rate_limiter')->clear();
     }
 
     /** @return array{0: int, 1: array<string, mixed>} */

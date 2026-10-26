@@ -42,6 +42,26 @@ export type Order = Omit<Quote, 'freeShippingFrom' | 'code'> & {
   timeline: OrderStep[]
 }
 
+export type User = { email: string; firstName: string; lastName: string; createdAt: string }
+
+export type AccountStep = OrderStep & { current: boolean }
+
+export type AccountOrder = {
+  reference: string
+  token: string
+  createdAt: string
+  paidAt: string
+  status: string
+  statusLabel: string
+  total: number
+  lines: { slug: string; name: string; finish: string; size: number; quantity: number; serials: number[] }[]
+  timeline: AccountStep[]
+}
+
+export type Piece = { slug: string; name: string; finish: string; size: number; serial: number; editionTotal: number; orderReference: string; castAt: string }
+
+export type AccountOrders = { current: AccountOrder | null; history: AccountOrder[]; pieces: Piece[] }
+
 export type Payment = { method: 'card' | 'applepay' | 'paypal'; cardNumber?: string; expiry?: string; cvc?: string }
 
 /** Erreur renvoyée par l'API : message lisible + éventuelles erreurs par champ. */
@@ -82,6 +102,11 @@ export const api = {
     call<Quote & { reference: string }>(`/orders/${encodeURIComponent(reference)}/code?token=${encodeURIComponent(token)}`, post({ code: code || null })),
   pay: (reference: string, token: string, payment: Payment) =>
     call<Order>(`/orders/${encodeURIComponent(reference)}/pay?token=${encodeURIComponent(token)}`, post(payment)),
+  register: (data: { email: string; password: string; firstName: string; lastName: string }) => call<User>('/auth/register', post(data)),
+  login: (email: string, password: string, remember: boolean) => call<User>('/auth/login', post({ email, password, remember })),
+  logout: () => call<null>('/auth/logout', { method: 'POST' }),
+  me: () => call<User>('/me'),
+  myOrders: () => call<AccountOrders>('/me/orders'),
   order: (reference: string, token: string) =>
     call<Order>(`/orders/${encodeURIComponent(reference)}?token=${encodeURIComponent(token)}`),
 }

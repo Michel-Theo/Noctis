@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /** Ligne de commande : nom et prix figés au moment de l'achat. */
@@ -12,6 +13,10 @@ class OrderItem
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    /** @var list<int> Numéros dans la série (N° 001 / 150…), attribués au paiement. */
+    #[ORM\Column(type: Types::JSON)]
+    private array $serials = [];
 
     public function __construct(
         #[ORM\ManyToOne(inversedBy: 'items')]
@@ -76,5 +81,17 @@ class OrderItem
     public function getTotal(): int
     {
         return $this->unitPrice * $this->quantity;
+    }
+
+    /** @return list<int> */
+    public function getSerials(): array
+    {
+        return $this->serials;
+    }
+
+    /** @param list<int> $serials */
+    public function setSerials(array $serials): void
+    {
+        $this->serials = $serials;
     }
 }

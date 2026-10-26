@@ -11,10 +11,10 @@ final class OrderPresenter
 {
     /** Étapes de fabrication : clé, libellé, délai en jours après la commande, statuts où l'étape est faite. */
     private const TIMELINE = [
-        ['ordered', 'Commandée', 0, [OrderStatus::Paid, OrderStatus::Cast, OrderStatus::Polished, OrderStatus::Shipped]],
-        ['cast', 'Coulée', 4, [OrderStatus::Cast, OrderStatus::Polished, OrderStatus::Shipped]],
-        ['polished', 'Polie & rhodiée', 8, [OrderStatus::Polished, OrderStatus::Shipped]],
-        ['shipped', 'Expédiée', 10, [OrderStatus::Shipped]],
+        ['ordered', 'Commandée', 0, [OrderStatus::Paid, OrderStatus::Cast, OrderStatus::Polished, OrderStatus::Shipped, OrderStatus::Delivered]],
+        ['cast', 'Coulée', 4, [OrderStatus::Cast, OrderStatus::Polished, OrderStatus::Shipped, OrderStatus::Delivered]],
+        ['polished', 'Polie & rhodiée', 8, [OrderStatus::Polished, OrderStatus::Shipped, OrderStatus::Delivered]],
+        ['shipped', 'Expédiée', 10, [OrderStatus::Shipped, OrderStatus::Delivered]],
     ];
 
     /** @return array<string, mixed> */
@@ -38,6 +38,7 @@ final class OrderPresenter
                 'quantity' => $i->getQuantity(),
                 'unitPrice' => $i->getUnitPrice(),
                 'total' => $i->getTotal(),
+                'serials' => $i->getSerials(),
             ], $order->getItems()->toArray()),
             'subtotal' => $order->getSubtotal(),
             'shipping' => $order->getShippingCost(),

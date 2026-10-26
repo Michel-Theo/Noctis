@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { formatPrice } from '../../data/products'
 import { useCart } from '../../lib/cart-context'
+import { useAuth } from '../../lib/auth-context'
 import { api, ApiError, type OrderForm, type Shipping } from '../../lib/api'
 import { SHIPPING_OPTIONS, shippingCost, useQuote } from '../../lib/pricing'
 import { cartSignature, readCheckout, saveCheckout } from '../../lib/checkout'
@@ -29,7 +30,11 @@ export function CheckoutPage() {
   const { lines } = useCart()
   const navigate = useNavigate()
   const saved = readCheckout()
-  const [form, setForm] = useState<OrderForm>(saved.form)
+  const { user } = useAuth()
+  // Client connecté : on reprend son nom et son e-mail.
+  const [form, setForm] = useState<OrderForm>(() =>
+    user && !saved.form.email ? { ...saved.form, email: user.email, firstName: user.firstName, lastName: user.lastName } : saved.form,
+  )
   const [shipping, setShipping] = useState<Shipping>(saved.shipping)
   const [errors, setErrors] = useState<Errors>({})
   const [failure, setFailure] = useState('')

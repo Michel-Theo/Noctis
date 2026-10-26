@@ -75,6 +75,11 @@ class Order
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $paymentMethod = null;
 
+    /** Compte qui a passé la commande ; null pour une commande invité. */
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?User $user = null;
+
     /** @var Collection<int, OrderItem> */
     #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'order', cascade: ['persist'], orphanRemoval: true)]
     private Collection $items;
@@ -225,6 +230,30 @@ class Order
     public function addItem(OrderItem $item): void
     {
         $this->items->add($item);
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): void
+    {
+        $this->user = $user;
+    }
+
+    /** Date de commande imposée (jeux de démonstration). */
+    public function placedAt(\DateTimeImmutable $at): void
+    {
+        $this->createdAt = $at;
+    }
+
+    /** Fait avancer la fabrication d'une étape ; renvoie le nouveau statut. */
+    public function advance(): OrderStatus
+    {
+        $this->status = $this->status->next() ?? throw new \LogicException(\sprintf('La commande %s ne peut pas avancer (statut : %s).', $this->reference, $this->status->value));
+
+        return $this->status;
     }
 
     public function markPaid(string $method, ?\DateTimeImmutable $at = null): void

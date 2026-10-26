@@ -14,6 +14,10 @@ class Product
     #[ORM\Column]
     private ?int $id = null;
 
+    /** Pièces déjà numérotées (vendues) sur les editionTotal de la série. */
+    #[ORM\Column(options: ['default' => 0])]
+    private int $editionSold = 0;
+
     /**
      * @param list<string> $finishes
      * @param list<int>    $sizes
@@ -82,5 +86,32 @@ class Product
     public function getSizes(): array
     {
         return $this->sizes;
+    }
+
+    public function getEditionSold(): int
+    {
+        return $this->editionSold;
+    }
+
+    /** Pièces encore disponibles dans la série. */
+    public function getRemaining(): int
+    {
+        return max(0, $this->editionTotal - $this->editionSold);
+    }
+
+    /**
+     * Attribue les prochains numéros de la série (à appeler sous verrou).
+     *
+     * @return list<int>
+     */
+    public function takeSerials(int $quantity): array
+    {
+        if ($quantity > $this->getRemaining()) {
+            throw new \LogicException('Série épuisée.');
+        }
+        $first = $this->editionSold + 1;
+        $this->editionSold += $quantity;
+
+        return range($first, $this->editionSold);
     }
 }

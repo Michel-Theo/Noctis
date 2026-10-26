@@ -9,9 +9,9 @@ use App\Entity\Order;
 use App\Entity\OrderStatus;
 use App\Order\OrderFactory;
 use App\Order\OrderPresenter;
+use App\Order\SerialAllocator;
 use App\Payment\PaymentGateway;
 use App\Repository\OrderRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
@@ -47,7 +47,7 @@ final class OrderController extends AbstractController
         string $reference,
         #[MapRequestPayload] PaymentInput $payment,
         PaymentGateway $gateway,
-        EntityManagerInterface $em,
+        SerialAllocator $serials,
         #[MapQueryParameter] ?string $token = null,
     ): JsonResponse {
         $order = $this->find($reference, $token);
@@ -56,11 +56,13 @@ final class OrderController extends AbstractController
         }
         try {
             $gateway->charge($order, $payment);
+            // Numérotation des pièces + enregistrement du paiement, sous verrou.
+            // Série épuisée entre-temps : avec un vrai prestataire, c'est ici qu'on rembourserait.
+            $serials->allocate($order);
         } catch (\Throwable $e) {
             $this->orders->releasePayment($order);
             throw $e;
         }
-        $em->flush();
 
         return $this->json($this->presenter->present($order));
     }

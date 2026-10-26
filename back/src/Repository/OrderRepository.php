@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Order;
 use App\Entity\OrderStatus;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -24,6 +25,26 @@ class OrderRepository extends ServiceEntityRepository
         }
 
         return $order;
+    }
+
+    /**
+     * Commandes réglées d'un compte, de la plus récente à la plus ancienne.
+     *
+     * @return list<Order>
+     */
+    public function findPaidByUser(User $user): array
+    {
+        return $this->createQueryBuilder('o')
+            ->addSelect('i', 'p')
+            ->join('o.items', 'i')
+            ->join('i.product', 'p')
+            ->where('o.user = :user AND o.status NOT IN (:unpaid)')
+            ->setParameter('user', $user)
+            ->setParameter('unpaid', [OrderStatus::Pending->value, OrderStatus::Processing->value])
+            ->orderBy('o.createdAt', 'DESC')
+            ->addOrderBy('o.id', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**

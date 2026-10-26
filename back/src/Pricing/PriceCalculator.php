@@ -24,6 +24,7 @@ final class PriceCalculator
     {
         $catalog = $this->products->findBySlugs(array_map(static fn (CartItemInput $i) => $i->slug, $items));
         $lines = [];
+        $wanted = [];
         $subtotal = 0;
 
         foreach ($items as $item) {
@@ -36,6 +37,14 @@ final class PriceCalculator
             }
             if (!\in_array($item->size, $product->getSizes(), true)) {
                 throw new PricingException(\sprintf('Taille %d indisponible pour %s.', $item->size, $product->getName()));
+            }
+
+            // Série limitée : plusieurs lignes d'une même pièce comptent ensemble.
+            $wanted[$item->slug] = ($wanted[$item->slug] ?? 0) + $item->quantity;
+            if ($wanted[$item->slug] > $product->getRemaining()) {
+                throw new PricingException(0 === $product->getRemaining()
+                    ? \sprintf('%s est épuisée.', $product->getName())
+                    : \sprintf('%s : plus que %d pièce%s dans la série.', $product->getName(), $product->getRemaining(), $product->getRemaining() > 1 ? 's' : ''));
             }
 
             $total = $product->getPrice() * $item->quantity;

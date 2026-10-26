@@ -6,9 +6,11 @@ use App\Dto\CartItemInput;
 use App\Dto\OrderInput;
 use App\Entity\Order;
 use App\Entity\OrderItem;
+use App\Entity\User;
 use App\Pricing\PriceCalculator;
 use App\Pricing\Quote;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /** Crée une commande en attente de paiement, au prix du catalogue. */
 final class OrderFactory
@@ -16,6 +18,7 @@ final class OrderFactory
     public function __construct(
         private readonly PriceCalculator $calculator,
         private readonly EntityManagerInterface $em,
+        private readonly Security $security,
     ) {
     }
 
@@ -24,6 +27,9 @@ final class OrderFactory
         $quote = $this->calculator->quote($input->items, $input->shipping, $input->code);
 
         $order = new Order();
+        // Client connecté : la commande rejoint son compte. Les commandes invité restent anonymes.
+        $user = $this->security->getUser();
+        $order->setUser($user instanceof User ? $user : null);
         $order->setCustomer(trim($input->email), trim($input->firstName), trim($input->lastName));
         $order->setShippingAddress(trim($input->address), trim($input->postalCode), trim($input->city), trim($input->country));
         $order->setAmounts($quote->shippingMethod, $quote->shipping, $quote->subtotal, $quote->discount, $quote->validCode(), $quote->total);
