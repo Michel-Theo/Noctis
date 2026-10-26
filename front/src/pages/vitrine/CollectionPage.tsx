@@ -4,6 +4,7 @@ import { type Product } from '../../data/products'
 import { useCatalog } from '../../lib/catalog'
 import { ProductCard } from '../../components/ProductCard'
 import { Footer } from '../../components/Footer'
+import { PromoPopup } from '../../components/PromoPopup'
 import { useReveal } from '../../lib/useReveal'
 
 const FAMILIES: { id: Product['type'] | 'tout'; label: string }[] = [
@@ -93,6 +94,7 @@ export function CollectionPage() {
       <div className="product__footer">
         <Footer />
       </div>
+      <PromoPopup />
     </main>
   )
 }
