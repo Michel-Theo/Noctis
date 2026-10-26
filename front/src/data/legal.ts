@@ -18,7 +18,7 @@ export const LEGAL: LegalPage[] = [
       { title: 'Hébergement', text: 'Le site est hébergé sur un serveur privé virtuel loué par l’éditeur.' },
       {
         title: 'Propriété intellectuelle',
-        text: 'Le logo, les textes, les modèles 3D et les rendus des pièces ont été créés pour ce projet. Les photographies d’ambiance provisoires sont issues de banques d’images libres de droits.',
+        text: 'Le logo, les textes, les modèles 3D et les rendus des pièces ont été créés pour ce projet. Les photographies de mains baguées sont de Magnolia (@magnolia_x), publiées sous licence Unsplash.',
       },
     ],
   },
