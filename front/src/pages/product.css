@@ -192,12 +192,11 @@
   font-family: var(--font-mono);
   font-size: 12px;
 }
+/* Composant Figma « Quantité » : 110 × 35, trois cases de 36 px. */
 .stepper button,
 .stepper span {
-  padding: var(--spacing-sm) var(--spacing-md);
-}
-.stepper span {
-  min-width: 2.5em;
+  width: 36px;
+  padding: var(--spacing-xs) 0;
   text-align: center;
 }
 /* Ajout au panier : un aplat plus clair remplit le bouton de gauche à droite. */

@@ -23,7 +23,7 @@ export function CartPage() {
   if (!lines.length) {
     return (
       <main className="cart-empty">
-        <Sigil size={96} className="cart-empty__sigil" />
+        <Sigil size={120} className="cart-empty__sigil" />
         <h1 className="t-h1">Votre panier est vide</h1>
         <p className="t-body-l">La nuit est encore jeune.</p>
         <Link to="/#collection" className="btn btn--secondary">
@@ -45,7 +45,7 @@ export function CartPage() {
       <section className="cart__main">
         <div className="cart__title">
           <h1 className="t-display-l">Panier</h1>
-          <span className="t-label-s">{pieces(count)}</span>
+          <span className="t-label cart__count">{pieces(count)}</span>
         </div>
         <ul className="cart__lines">
           {lines.map((l) => (

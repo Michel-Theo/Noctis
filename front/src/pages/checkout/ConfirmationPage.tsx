@@ -42,8 +42,8 @@ export function ConfirmationPage() {
 
   return (
     <main className="confirm">
-      <Sigil size={120} draw accent={lit} className="confirm__sigil" />
-      <p className="t-label-s t-accent">Commande N° {order.reference}</p>
+      <Sigil size={140} draw accent={lit} className="confirm__sigil" />
+      <p className="t-label t-accent">Commande N° {order.reference}</p>
       <h1 className="t-display-l confirm__title">
         Votre relique
         <br />
@@ -65,7 +65,7 @@ export function ConfirmationPage() {
         ))}
       </ol>
       <div className="confirm__actions">
-        <Link to="/#collection" className="btn btn--secondary">
+        <Link to="/#collection" className="t-label link-draw">
           Retour à la collection
         </Link>
       </div>
