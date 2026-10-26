@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Order;
+use App\Entity\OrderStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -25,20 +26,31 @@ class OrderRepository extends ServiceEntityRepository
         return $order;
     }
 
-    /** Prochaine référence de l'année : NX-2026-0001, NX-2026-0002… */
-    public function nextReference(\DateTimeImmutable $now): string
+    /**
+     * Réserve la commande pour un paiement : passe de « en attente » à « en cours » en une seule
+     * requête conditionnelle. Deux paiements simultanés : un seul obtient true.
+     */
+    public function claimForPayment(Order $order): bool
     {
-        $prefix = 'NX-'.$now->format('Y').'-';
-        $last = $this->createQueryBuilder('o')
-            ->select('o.reference')
-            ->where('o.reference LIKE :p')
-            ->setParameter('p', $prefix.'%')
-            ->orderBy('o.reference', 'DESC')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
-        $n = $last ? (int) substr($last['reference'], -4) + 1 : 1;
+        return 1 === $this->switchStatus($order, OrderStatus::Pending, OrderStatus::Processing);
+    }
 
-        return $prefix.str_pad((string) $n, 4, '0', STR_PAD_LEFT);
+    /** Paiement échoué : la commande redevient payable. */
+    public function releasePayment(Order $order): void
+    {
+        $this->switchStatus($order, OrderStatus::Processing, OrderStatus::Pending);
+    }
+
+    private function switchStatus(Order $order, OrderStatus $from, OrderStatus $to): int
+    {
+        return $this->createQueryBuilder('o')
+            ->update()
+            ->set('o.status', ':to')
+            ->where('o.id = :id AND o.status = :from')
+            ->setParameter('to', $to)
+            ->setParameter('from', $from)
+            ->setParameter('id', $order->getId())
+            ->getQuery()
+            ->execute();
     }
 }

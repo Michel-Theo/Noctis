@@ -55,8 +55,9 @@ final class ApiExceptionListener
         }
 
         $status = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
-        // Les messages écrits dans src/ sont destinés au client (en français) ; ceux du framework, non.
-        $ours = str_starts_with(str_replace('\\', '/', $e->getFile()), str_replace('\\', '/', $this->projectDir).'/src/');
+        // Les messages des erreurs HTTP levées dans src/ sont destinés au client (en français) ;
+        // ceux du framework et ceux des pannes internes (500), jamais.
+        $ours = $status < 500 && str_starts_with(str_replace('\\', '/', $e->getFile()), str_replace('\\', '/', $this->projectDir).'/src/');
         $body = ['error' => $ours && $e->getMessage() ? $e->getMessage() : (self::DEFAULTS[$status] ?? 'Erreur interne.')];
         if ($this->debug && !$ours) {
             $body['detail'] = ($e->getPrevious() ?? $e)->getMessage();

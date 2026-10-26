@@ -20,7 +20,8 @@ export function PaymentPage() {
   const { lines, clear } = useCart()
   const navigate = useNavigate()
   const saved = readCheckout()
-  const quote = useQuote(lines, saved.shipping, saved.code)
+  const [code, setCode] = useState(saved.code)
+  const quote = useQuote(lines, saved.shipping, code)
   const [method, setMethod] = useState<Payment['method']>('card')
   const [card, setCard] = useState({ number: '', expiry: '', cvc: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -36,6 +37,13 @@ export function PaymentPage() {
 
   const { form } = saved
   const ship = SHIPPING_OPTIONS.find((o) => o.id === saved.shipping)!
+
+  const applyCode = async (c: string) => {
+    const res = await api.applyCode(order.reference, order.token, c)
+    const kept = res.code?.valid ? c : ''
+    saveCheckout({ code: kept, order: { ...order, total: res.total } })
+    setCode(c)
+  }
 
   const pay = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -145,7 +153,7 @@ export function PaymentPage() {
           </button>
         </div>
       </form>
-      <OrderSummary lines={lines} quote={quote} />
+      <OrderSummary lines={lines} quote={quote} code={code} onCode={applyCode} />
     </main>
   )
 }

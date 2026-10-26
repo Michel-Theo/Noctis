@@ -227,11 +227,6 @@ class Order
         $this->items->add($item);
     }
 
-    public function isPaid(): bool
-    {
-        return OrderStatus::Pending !== $this->status;
-    }
-
     public function markPaid(string $method, ?\DateTimeImmutable $at = null): void
     {
         $this->status = OrderStatus::Paid;

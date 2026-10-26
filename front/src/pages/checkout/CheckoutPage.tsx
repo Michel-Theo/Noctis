@@ -34,7 +34,8 @@ export function CheckoutPage() {
   const [errors, setErrors] = useState<Errors>({})
   const [failure, setFailure] = useState('')
   const [busy, setBusy] = useState(false)
-  const quote = useQuote(lines, shipping, saved.code)
+  const [code, setCode] = useState(saved.code)
+  const quote = useQuote(lines, shipping, code)
 
   if (!lines.length) return <Navigate to="/panier" replace />
 
@@ -59,7 +60,7 @@ export function CheckoutPage() {
     saveCheckout({ form, shipping })
     setBusy(true)
     try {
-      const order = await api.createOrder(form, lines, shipping, saved.code)
+      const order = await api.createOrder(form, lines, shipping, code)
       saveCheckout({ order: { ...order, cart: cartSignature(lines) } })
       navigate('/commande/paiement')
     } catch (err) {
@@ -134,7 +135,15 @@ export function CheckoutPage() {
           </button>
         </div>
       </form>
-      <OrderSummary lines={lines} quote={quote} />
+      <OrderSummary
+        lines={lines}
+        quote={quote}
+        code={code}
+        onCode={(c) => {
+          setCode(c)
+          saveCheckout({ code: c })
+        }}
+      />
     </main>
   )
 }

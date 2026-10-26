@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Dto\CodeInput;
 use App\Dto\OrderInput;
 use App\Dto\PaymentInput;
 use App\Entity\Order;
+use App\Entity\OrderStatus;
 use App\Order\OrderFactory;
 use App\Order\OrderPresenter;
 use App\Payment\PaymentGateway;
@@ -49,13 +51,34 @@ final class OrderController extends AbstractController
         #[MapQueryParameter] ?string $token = null,
     ): JsonResponse {
         $order = $this->find($reference, $token);
-        if ($order->isPaid()) {
+        if (!$this->orders->claimForPayment($order)) {
             throw new ConflictHttpException('Cette commande est déjà réglée.');
         }
-        $gateway->charge($order, $payment);
+        try {
+            $gateway->charge($order, $payment);
+        } catch (\Throwable $e) {
+            $this->orders->releasePayment($order);
+            throw $e;
+        }
         $em->flush();
 
         return $this->json($this->presenter->present($order));
+    }
+
+    /** Code de la nuit saisi à l'étape paiement : la commande en attente est recalculée. */
+    #[Route('/{reference}/code', methods: ['POST'])]
+    public function code(
+        string $reference,
+        #[MapRequestPayload] CodeInput $input,
+        OrderFactory $factory,
+        #[MapQueryParameter] ?string $token = null,
+    ): JsonResponse {
+        $order = $this->find($reference, $token);
+        if (OrderStatus::Pending !== $order->getStatus()) {
+            throw new ConflictHttpException('Cette commande est déjà réglée.');
+        }
+
+        return $this->json(['reference' => $order->getReference()] + $factory->applyCode($order, $input->code)->toArray());
     }
 
     #[Route('/{reference}', methods: ['GET'])]

@@ -7,6 +7,7 @@ import { useCountUp } from '../lib/useCountUp'
 import { CartLineRow } from '../components/CartLineRow'
 import { Sigil } from '../components/Sigil'
 import { Footer } from '../components/Footer'
+import { CodeField } from '../components/CodeField'
 import { readCheckout, saveCheckout } from '../lib/checkout'
 
 const pieces = (n: number) => `${n} pièce${n > 1 ? 's' : ''}`
@@ -15,7 +16,6 @@ const pieces = (n: number) => `${n} pièce${n > 1 ? 's' : ''}`
 export function CartPage() {
   const { lines, count } = useCart()
   const [code, setCode] = useState(() => readCheckout().code)
-  const [draft, setDraft] = useState(code)
   const quote = useQuote(lines, 'colissimo', code)
   const subtotal = useCountUp(quote.subtotal)
   const total = useCountUp(quote.total)
@@ -33,10 +33,9 @@ export function CartPage() {
     )
   }
 
-  const applyCode = (e: React.FormEvent) => {
-    e.preventDefault()
-    setCode(draft.trim())
-    saveCheckout({ code: draft.trim() })
+  const applyCode = (c: string) => {
+    setCode(c)
+    saveCheckout({ code: c })
   }
   const missing = quote.freeShippingFrom - quote.subtotal
 
@@ -85,22 +84,7 @@ export function CartPage() {
           <span className="t-label">Total</span>
           <span className="summary__amount">{formatPrice(total)}</span>
         </div>
-        <form className="summary__code" onSubmit={applyCode}>
-          <label className="t-label-s" htmlFor="code">
-            Code de la nuit
-          </label>
-          <div className="summary__code-row">
-            <input id="code" className="field__input" placeholder="Saisir un code" value={draft} onChange={(e) => setDraft(e.target.value)} />
-            <button className="t-label link-draw" type="submit">
-              Appliquer
-            </button>
-          </div>
-          {quote.code && (
-            <p className={['t-label-s', !quote.code.valid && 't-accent'].filter(Boolean).join(' ')} role="status">
-              {quote.code.valid ? `${quote.code.label} appliqué` : 'Ce code ne mène nulle part.'}
-            </p>
-          )}
-        </form>
+        <CodeField code={code} quote={quote} onApply={applyCode} />
         <div className="summary__cta">
           <Link to="/commande" className="btn btn--primary btn--block">
             Passer commande

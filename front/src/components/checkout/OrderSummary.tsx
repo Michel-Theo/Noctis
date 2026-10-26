@@ -3,9 +3,10 @@ import { formatPrice } from '../../data/products'
 import { lineKey, type CartLine } from '../../lib/cart-context'
 import type { Quote } from '../../lib/api'
 import { lineSub, thumbOf } from '../../lib/lines'
+import { CodeField } from '../CodeField'
 
 /** « Votre commande » : colonne de droite sur ordinateur, volet repliable en haut sur mobile (M8). */
-export function OrderSummary({ lines, quote }: { lines: CartLine[]; quote: Quote }) {
+export function OrderSummary({ lines, quote, code, onCode }: { lines: CartLine[]; quote: Quote; code: string; onCode: (code: string) => void | Promise<void> }) {
   const [open, setOpen] = useState(false)
   return (
     <aside className={['summary', 'order-summary', open && 'order-summary--open'].filter(Boolean).join(' ')} aria-label="Votre commande">
@@ -50,6 +51,7 @@ export function OrderSummary({ lines, quote }: { lines: CartLine[]; quote: Quote
           <span className="t-label">Total TTC</span>
           <span className="summary__amount">{formatPrice(quote.total)}</span>
         </div>
+        <CodeField code={code} quote={quote} onApply={onCode} />
         <p className="t-label-s">Fabrication 10 jours · expédition suivie</p>
       </div>
     </aside>

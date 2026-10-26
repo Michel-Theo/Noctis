@@ -78,6 +78,8 @@ export const api = {
     call<Quote>('/quote', { ...post({ items: items(lines), shipping, code: code || undefined }), signal }),
   createOrder: (form: OrderForm, lines: CartLine[], shipping: Shipping, code: string) =>
     call<CreatedOrder>('/orders', post({ ...form, shipping, items: items(lines), code: code || undefined })),
+  applyCode: (reference: string, token: string, code: string) =>
+    call<Quote & { reference: string }>(`/orders/${encodeURIComponent(reference)}/code?token=${encodeURIComponent(token)}`, post({ code: code || null })),
   pay: (reference: string, token: string, payment: Payment) =>
     call<Order>(`/orders/${encodeURIComponent(reference)}/pay?token=${encodeURIComponent(token)}`, post(payment)),
   order: (reference: string, token: string) =>
