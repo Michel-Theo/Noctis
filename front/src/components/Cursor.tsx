@@ -1,10 +1,13 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 /** Point + anneau qui suit avec retard. Sur un élément [data-cursor], l'anneau grossit et affiche le mot. */
 export function Cursor() {
   const dot = useRef<HTMLDivElement>(null)
   const ring = useRef<HTMLDivElement>(null)
   const label = useRef<HTMLSpanElement>(null)
+  // Conteneur déplacé dans la modale ouverte : une <dialog> passe au-dessus de tout (top layer), curseur compris.
+  const [host] = useState(() => document.createElement('div'))
 
   useEffect(() => {
     if (window.matchMedia('(pointer: coarse)').matches) return
@@ -25,7 +28,10 @@ export function Cursor() {
       refresh()
     }
     window.addEventListener('scroll', refresh, { passive: true })
+    document.body.appendChild(host)
     const loop = () => {
+      const parent = document.querySelector('dialog[open]') ?? document.body
+      if (host.parentNode !== parent) parent.appendChild(host)
       lag.x += (pos.x - lag.x) * 0.15
       lag.y += (pos.y - lag.y) * 0.15
       if (dot.current) dot.current.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0)`
@@ -40,15 +46,17 @@ export function Cursor() {
       window.removeEventListener('scroll', refresh)
       cancelAnimationFrame(raf)
       document.documentElement.classList.remove('has-cursor')
+      host.remove()
     }
-  }, [])
+  }, [host])
 
-  return (
+  return createPortal(
     <>
       <div ref={dot} className="cursor__dot" aria-hidden="true" />
       <div ref={ring} className="cursor__ring" aria-hidden="true">
         <span ref={label} className="cursor__label" />
       </div>
-    </>
+    </>,
+    host,
   )
 }
