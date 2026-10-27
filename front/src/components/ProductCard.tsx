@@ -1,9 +1,11 @@
-import { useRef, useState } from 'react'
+import { lazy, Suspense, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { prefersReducedMotion } from '../lib/scroll'
 import { rememberCard } from '../lib/transition'
-import { MiniRing } from '../three/MiniRing'
 import { formatPrice, type Product } from '../data/products'
+
+// La bague 3D du survol (et Three.js avec elle) n'est téléchargée qu'au premier survol.
+const MiniRing = lazy(() => import('../three/MiniRing').then((m) => ({ default: m.MiniRing })))
 
 /** Carte produit (collection, recommandations). Pièce « en forge » = visuel flouté, non cliquable. */
 export function ProductCard({ p }: { p: Product }) {
@@ -31,7 +33,11 @@ export function ProductCard({ p }: { p: Product }) {
       <div ref={media} className="card__media">
         <img src={p.card ?? '/img/produit/face_nuit.webp'} alt={forge ? '' : p.name} loading="lazy" />
         {/* Au survol, l'image laisse place à la bague en 3D qui tourne. */}
-        {!forge && hover && !prefersReducedMotion() && <MiniRing />}
+        {!forge && hover && !prefersReducedMotion() && (
+          <Suspense fallback={null}>
+            <MiniRing />
+          </Suspense>
+        )}
       </div>
       <div className="card__meta">
         <div>
