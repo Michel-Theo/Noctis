@@ -20,7 +20,7 @@ export function AdminProducts() {
       <AdminTop title="Produits" />
       {failure && <p className="checkout__failure">{failure}</p>}
       <div className={['panel', 'panel--flush', !rows && 'is-loading'].filter(Boolean).join(' ')}>
-        <table className="admin-table">
+        <table className="admin-table admin-table--products">
           <thead>
             <tr>
               {['Pièce', 'Prix', 'Série', 'Statut'].map((h) => (

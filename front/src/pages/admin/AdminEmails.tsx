@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { api } from '../../lib/api'
 import { AdminTop } from './AdminApp'
 
@@ -20,6 +20,17 @@ export function AdminEmails() {
 
   const selected = list?.find((m) => m.key === current)
 
+  // Un e-mail fait 600 px : sur un écran plus étroit, l'aperçu est réduit à la largeur disponible.
+  const frame = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(1)
+  useEffect(() => {
+    const el = frame.current
+    if (!el) return
+    const ro = new ResizeObserver(([e]) => setScale(Math.min(1, (e.contentRect.width - 2) / 602)))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [selected])
+
   return (
     <>
       <AdminTop title="E-mails" />
@@ -29,7 +40,7 @@ export function AdminEmails() {
           {list?.map((m) => (
             <button key={m.key} className={['emails__item', m.key === current && 'is-current'].filter(Boolean).join(' ')} aria-current={m.key === current} onClick={() => setCurrent(m.key)}>
               <span className="t-label">{m.label}</span>
-              <span className="t-label-s">{m.subject}</span>
+              <span className="t-label-s emails__item-subject">{m.subject}</span>
             </button>
           ))}
         </nav>
@@ -39,7 +50,14 @@ export function AdminEmails() {
               <p className="t-label-s">
                 Objet&nbsp;: <span className="emails__subject">{selected.subject}</span>
               </p>
-              <iframe key={current} title={`Aperçu : ${selected.label}`} src={api.admin.emailUrl(current)} />
+              <div ref={frame} className="emails__frame">
+                <iframe
+                  key={current}
+                  title={`Aperçu : ${selected.label}`}
+                  src={api.admin.emailUrl(current)}
+                  style={scale < 1 ? { width: 600, height: `calc(78vh / ${scale})`, transform: `scale(${scale})`, transformOrigin: '0 0' } : undefined}
+                />
+              </div>
             </>
           )}
         </section>

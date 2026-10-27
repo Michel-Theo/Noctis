@@ -673,7 +673,8 @@ html:not(.has-cursor) .cursor__ring {
   .hero__title {
     left: 20px;
     right: 20px;
-    top: calc(100svh - 250px);
+    top: calc(100svh - 236px);
+    font-size: clamp(26px, 7.6vw, 32px);
   }
   .hero__side {
     display: none;
@@ -687,7 +688,8 @@ html:not(.has-cursor) .cursor__ring {
   .anatomie__sticky,
   .forge__sticky {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: 45vh auto;
+    grid-template-rows: 38svh auto;
+    height: 100svh;
     padding: 80px 20px 20px;
     gap: var(--spacing-lg);
   }
@@ -709,8 +711,12 @@ html:not(.has-cursor) .cursor__ring {
   .anatomie__text {
     gap: var(--spacing-md);
   }
+  .anatomie__text h2 {
+    font-size: 30px;
+  }
   .anatomie__text .t-body-l {
-    font-size: 16px;
+    font-size: 15px;
+    line-height: 1.5;
   }
   .anatomie__legend {
     position: static;
@@ -820,6 +826,14 @@ html:not(.has-cursor) .cursor__ring {
   }
   .rejoindre__giant {
     font-size: 15vw;
+  }
+  .rejoindre__form {
+    width: 100%;
+  }
+  .rejoindre__input {
+    flex: 1;
+    min-width: 0;
+    width: auto;
   }
   .collection__head,
   .collection__rail {

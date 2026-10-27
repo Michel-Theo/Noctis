@@ -528,6 +528,10 @@ fieldset.field {
   color: var(--color-text-primary);
   text-transform: none;
 }
+.emails__frame {
+  height: 78vh;
+  overflow: hidden;
+}
 /* Largeur d'un client de messagerie : l'e-mail fait 600 px. */
 .emails__preview iframe {
   width: 100%;
@@ -718,10 +722,58 @@ fieldset.field {
     flex: 1;
     justify-content: center;
   }
+  /* E-mails : la liste devient une rangée qui défile, l'aperçu reste à portée. */
   .emails__list {
-    flex-direction: row;
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 6px;
   }
-  .emails__preview iframe {
-    height: 70vh;
+  .emails__item {
+    flex: none;
+    border-left: 0;
+    border-bottom: 2px solid transparent;
   }
+  .emails__item.is-current {
+    border-bottom-color: var(--color-accent-default);
+  }
+  .emails__item-subject {
+    display: none;
+  }
+  .admin__nav a {
+    font-size: 11px;
+  }
+
+  /* Produits : une fiche par pièce (nom et statut, prix et série). */
+  .admin-table--products thead {
+    display: none;
+  }
+  .admin-table--products tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px var(--spacing-sm);
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border-default);
+  }
+  .admin-table--products td {
+    height: auto;
+    padding: 0;
+    border: 0;
+  }
+  .admin-table--products td:nth-child(2) {
+    grid-row: 2;
+  }
+  .admin-table--products td:nth-child(3) {
+    grid-row: 2;
+    text-align: right;
+  }
+  .admin-table--products td:nth-child(4) {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: right;
+  }
+  .panel--flush {
+    overflow-x: auto;
+  }
+
 }

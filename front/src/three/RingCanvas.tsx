@@ -38,7 +38,9 @@ function Ring() {
     if (t < 0.02) g.rotation.y += delta * 0.1
     g.rotation.x = THREE.MathUtils.damp(g.rotation.x, sceneState.pointer.y * 0.25 - t * 0.6, 4, delta)
     g.rotation.z = THREE.MathUtils.damp(g.rotation.z, -sceneState.pointer.x * 0.15, 4, delta)
-    g.position.y = THREE.MathUtils.damp(g.position.y, -t * 0.01, 6, delta)
+    // Écran vertical : la bague remonte pour laisser le bas de l'écran au titre.
+    const lift = state.size.width < state.size.height ? 0.009 : 0
+    g.position.y = THREE.MathUtils.damp(g.position.y, lift - t * 0.01, 6, delta)
     g.scale.setScalar(THREE.MathUtils.damp(g.scale.x, 1 - t * 0.35, 6, delta))
   })
 
