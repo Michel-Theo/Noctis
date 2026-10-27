@@ -1,6 +1,8 @@
 /* ================= Back-office (maquettes page 10) ================= */
 
+/* « block » : un tableau ignore sa largeur de 1 px et élargirait la page. */
 .sr-only {
+  display: block;
   position: absolute;
   width: 1px;
   height: 1px;
@@ -535,44 +537,191 @@ fieldset.field {
 }
 
 @media (max-width: 900px) {
+  /* Colonnes « minmax(0, 1fr) » : aucun contenu ne peut élargir la page (sinon le téléphone dézoome). */
+  .admin,
+  .dash,
+  .product-edit,
   .emails {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
-  .admin {
-    grid-template-columns: 1fr;
+  .kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-sm);
   }
+  .kpi {
+    padding: 16px;
+    gap: var(--spacing-xs);
+  }
+  .kpi__value {
+    font-size: 26px;
+  }
+  .kpi__serie {
+    font-size: 16px;
+  }
+
+  /* Barre du haut : marque, puis menu qui défile au doigt. */
   .admin__side {
-    position: static;
+    position: sticky;
+    z-index: 20;
     height: auto;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: 16px 20px;
+    gap: var(--spacing-sm);
+    padding: 14px 20px 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border-default);
   }
   .admin__nav {
     display: flex;
-    flex-wrap: wrap;
+    flex: none;
+    width: calc(100% + 40px);
+    gap: 0;
+    margin: 0 -20px;
+    padding: 0 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .admin__nav::-webkit-scrollbar {
+    display: none;
+  }
+  .admin__nav a {
+    flex: none;
+    padding: 12px 8px;
+    border-left: 0;
+    border-bottom: 2px solid transparent;
+  }
+  .admin__nav a.active {
+    background: none;
+    border-bottom-color: var(--color-accent-default);
   }
   .admin__who {
     display: none;
   }
   .admin__main {
-    padding: 24px 20px 48px;
+    gap: var(--spacing-md);
+    padding: 20px 20px 96px;
   }
   .admin__top {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: var(--spacing-sm);
+  }
+  .admin__title {
+    font-size: 28px;
+  }
+  .admin__actions {
+    flex-wrap: wrap;
+  }
+  .admin__actions form {
+    flex: 1 1 100%;
+  }
+  .admin__actions > .btn,
+  .admin__month {
+    flex: 1;
+  }
+  .admin__month select {
+    width: 100%;
   }
   .admin__search {
     width: 100%;
   }
-  .dash,
-  .kpis,
-  .product-edit {
-    grid-template-columns: 1fr;
-  }
-  .panel--flush {
+  .admin__filters {
+    flex-wrap: nowrap;
     overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .admin__filters .tag {
+    flex: none;
+  }
+  .panel {
+    padding: 18px;
+  }
+  .chart__plot,
+  .chart__axis {
+    margin-left: 32px;
+  }
+  .chart__tick {
+    text-indent: -32px;
+  }
+
+  /* Commandes : chaque ligne devient une fiche (N° et total, client et pièces, statut). */
+  .admin-table--orders thead {
+    display: none;
+  }
+  .admin-table--orders tr {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'check ref total'
+      'check client client'
+      'check pieces pieces'
+      'check status date';
+    gap: 4px var(--spacing-sm);
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-border-default);
+  }
+  .panel--flush .admin-table--orders tr {
+    padding: 14px 16px;
+  }
+  .admin-table--orders td {
+    height: auto;
+    padding: 0;
+    border: 0;
+  }
+  .admin-table--orders .admin-table__check {
+    grid-area: check;
+    width: auto;
+    padding-top: 2px;
+  }
+  .admin-table--orders .cell-ref {
+    grid-area: ref;
+  }
+  .admin-table--orders .cell-total {
+    grid-area: total;
+    text-align: right;
+  }
+  .admin-table--orders .cell-client {
+    grid-area: client;
+  }
+  .admin-table--orders .cell-pieces {
+    grid-area: pieces;
+    font-size: 13px;
+  }
+  .admin-table--orders .cell-size {
+    display: none;
+  }
+  .admin-table--orders .cell-status {
+    grid-area: status;
+    margin-top: 4px;
+  }
+  .admin-table--orders .cell-date {
+    grid-area: date;
+    align-self: end;
+    text-align: right;
+    font-size: 12px;
+  }
+  .admin-table--orders tr:has(.admin-table__empty) {
+    display: block;
+  }
+
+  /* Action groupée : collée en bas de l'écran, au pouce. */
+  .bulk {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm) var(--spacing-md);
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--color-border-strong);
+  }
+  .bulk .btn {
+    flex: 1;
+    justify-content: center;
+  }
+  .emails__list {
+    flex-direction: row;
+  }
+  .emails__preview iframe {
+    height: 70vh;
   }
 }

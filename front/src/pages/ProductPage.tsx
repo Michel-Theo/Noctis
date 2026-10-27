@@ -21,6 +21,9 @@ export function ProductPage() {
   const stage = useRef<HTMLDivElement>(null)
   const ghost = useRef<HTMLImageElement>(null)
   const [view, setView] = useState('3d')
+  // Écran tactile : le doigt fait défiler les vues au lieu de tourner la bague.
+  const [touch] = useState(() => window.matchMedia('(pointer: coarse)').matches)
+  const swipe = useRef<[number, number]>([0, 0])
   const [pickedFinish, setFinish] = useState('')
   const [pickedSize, setSize] = useState(0)
   const [qty, setQty] = useState(1)
@@ -73,6 +76,10 @@ export function ProductPage() {
 
   const price = formatPrice((p.price ?? 0) * qty)
   const media = p.gallery.find((g) => g.id === view)
+  const step = (d: number) => {
+    const i = p.gallery.findIndex((g) => g.id === view)
+    setView(p.gallery[(i + d + p.gallery.length) % p.gallery.length].id)
+  }
   const related = p.related.map((s) => catalog.find((x) => x.slug === s)!).filter(Boolean)
   // Choix encore valides après une modification du back-office, sinon les valeurs par défaut.
   const finish = p.finishes.includes(pickedFinish) ? pickedFinish : p.finishes[0]
@@ -106,12 +113,32 @@ export function ProductPage() {
               </li>
             ))}
           </ul>
-          <div ref={stage} className="product__stage" data-cursor={view === '3d' ? 'Glisser' : undefined}>
-            {view === '3d' ? <ProductViewer /> : <img key={media?.src} className="product__image" src={media?.src} alt={`${p.name} — ${media?.label}`} />}
+          <div
+            ref={stage}
+            className="product__stage"
+            data-cursor={view === '3d' && !touch ? 'Glisser' : undefined}
+            onTouchStart={(e) => (swipe.current = [e.touches[0].clientX, e.touches[0].clientY])}
+            onTouchEnd={(e) => {
+              // Glissement horizontal net : vue suivante / précédente.
+              const [x0, y0] = swipe.current
+              const dx = e.changedTouches[0].clientX - x0
+              const dy = e.changedTouches[0].clientY - y0
+              if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1)
+            }}
+          >
+            {view === '3d' ? <ProductViewer interactive={!touch} /> : <img key={media?.src} className="product__image" src={media?.src} alt={`${p.name} — ${media?.label}`} />}
             <p className="product__serial t-label-s">{p.serial}</p>
             {view === '3d' && (
               <p className="product__hint t-label-s">
-                ↻ Glisser pour tourner <span className="t-accent">360°</span>
+                {touch ? (
+                  <>
+                    ↻ 360° · glisser pour les photos <span className="t-accent">→</span>
+                  </>
+                ) : (
+                  <>
+                    ↻ Glisser pour tourner <span className="t-accent">360°</span>
+                  </>
+                )}
               </p>
             )}
           </div>

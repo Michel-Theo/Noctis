@@ -25,7 +25,7 @@ export function OrdersTable({
 }) {
   const selectable = !!selected
   return (
-    <table className={['admin-table', compact && 'admin-table--compact'].filter(Boolean).join(' ')}>
+    <table className={['admin-table', 'admin-table--orders', compact && 'admin-table--compact'].filter(Boolean).join(' ')}>
       <thead>
         <tr>
           {selectable && (
@@ -55,21 +55,21 @@ export function OrdersTable({
                 <input type="checkbox" aria-label={`Sélectionner ${o.reference}`} checked={selected.has(o.reference)} onChange={() => onToggle?.(o.reference)} />
               </td>
             )}
-            <td>
+            <td className="cell-ref">
               <Link to={`/commande/confirmation/${o.reference}?token=${o.token}`} target="_blank" className="link-draw">
                 {o.reference}
               </Link>
             </td>
-            {!compact && <td className="admin-table__muted">{day(o.paidAt)}</td>}
-            <td className="admin-table__muted" title={o.email}>
+            {!compact && <td className="admin-table__muted cell-date">{day(o.paidAt)}</td>}
+            <td className="admin-table__muted cell-client" title={o.email}>
               {o.customer}
             </td>
-            <td className="admin-table__muted">{pieces(o)}</td>
-            {!compact && <td className="admin-table__muted">{[...new Set(o.items.map((i) => i.size))].join(', ') || '—'}</td>}
-            <td>
+            <td className="admin-table__muted cell-pieces">{pieces(o)}</td>
+            {!compact && <td className="admin-table__muted cell-size">T. {[...new Set(o.items.map((i) => i.size))].join(', ') || '—'}</td>}
+            <td className="cell-status">
               <StatusBadge status={o.status} label={o.statusLabel} />
             </td>
-            <td className="admin-table__total">{euros(o.total)}</td>
+            <td className="admin-table__total cell-total">{euros(o.total)}</td>
           </tr>
         ))}
         {!orders.length && (

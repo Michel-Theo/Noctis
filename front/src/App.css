@@ -436,6 +436,19 @@ html:not(.has-cursor) .cursor__ring {
   white-space: nowrap;
 }
 
+.anatomie__legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.collection__dots,
+.collection__hint--mobile {
+  display: none;
+}
+
 /* La forge : manifeste en haut, étapes en ligne, bague en fond */
 .forge__sticky {
   display: grid;
@@ -514,6 +527,7 @@ html:not(.has-cursor) .cursor__ring {
 }
 .card {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--spacing-md);
   width: min(clamp(260px, 28vw, 400px), calc((100vh - 360px) * 400 / 440));
 }
@@ -639,18 +653,27 @@ html:not(.has-cursor) .cursor__ring {
   .anatomie__media {
     justify-items: center;
   }
+  /* Carré borné à la largeur de l'écran : sinon la page s'élargit et le téléphone dézoome. */
   .anatomie__stage {
-    height: 100%;
+    height: min(100%, calc(100vw - 40px));
   }
   .footer__nav {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--spacing-sm) var(--spacing-lg);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px var(--spacing-lg);
+    width: 100%;
   }
+  .footer__nav > * {
+    justify-self: start;
+  }
+  .footer__theme {
+    grid-column: 1 / -1;
+  }
+  /* svh : hauteur visible avec la barre d'adresse du navigateur, sinon le bas du héros est caché. */
   .hero__title {
     left: 20px;
     right: 20px;
-    top: calc(100vh - 230px);
+    top: calc(100svh - 250px);
   }
   .hero__side {
     display: none;
@@ -659,26 +682,144 @@ html:not(.has-cursor) .cursor__ring {
     left: 20px;
     right: auto;
     justify-items: start;
-    top: calc(100vh - 110px);
+    top: calc(100svh - 128px);
   }
   .anatomie__sticky,
   .forge__sticky {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-rows: 45vh auto;
     padding: 80px 20px 20px;
     gap: var(--spacing-lg);
   }
-  .forge__media {
-    width: 100%;
-    opacity: 0.45;
-    mask-image: none;
-  }
-  /* Sur mobile, pas la place pour les légendes à droite de la pièce */
-  .callouts {
+  /* Anatomie : les points restent sur la pièce, numérotés ; la légende passe sous le texte. */
+  .anatomie__lines,
+  .callout__label {
     display: none;
   }
+  .callout__dot::after {
+    content: attr(data-dot);
+    position: absolute;
+    left: 12px;
+    top: -6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--color-text-primary);
+  }
+  .anatomie__text {
+    gap: var(--spacing-md);
+  }
+  .anatomie__text .t-body-l {
+    font-size: 16px;
+  }
+  .anatomie__legend {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm) var(--spacing-md);
+  }
+  .anatomie__legend li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: var(--spacing-xs);
+  }
+  .anatomie__legend .t-label-s {
+    grid-column: 2;
+  }
+
+  /* Fil de fer : manifeste en haut, bague au milieu, une étape à la fois en bas. */
+  .forge__sticky {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    padding: 88px 20px 24px;
+    gap: var(--spacing-md);
+  }
+  .forge__manifeste {
+    font-size: clamp(22px, 6.4vw, 28px);
+    line-height: 1.2;
+  }
+  .forge__media {
+    position: relative;
+    grid-row: 2;
+    width: 100%;
+    height: 100%;
+    mask-image: none;
+  }
   .forge__steps {
+    grid-row: 3;
     grid-template-columns: 1fr;
+    padding-bottom: 0;
+  }
+  .forge__step {
+    grid-area: 1 / 1;
+  }
+  .forge__num {
+    font-size: 40px;
+  }
+
+  /* Collection : carrousel au doigt, pastilles de progression (maquette M2). */
+  .collection {
+    height: auto;
+    padding: var(--spacing-4xl) 0 var(--spacing-2xl);
+  }
+  .collection__rail {
+    width: auto;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 20px;
+    scrollbar-width: none;
+    gap: var(--spacing-md);
+  }
+  .collection__rail::-webkit-scrollbar {
+    display: none;
+  }
+  .collection__rail .card {
+    flex: none;
+    width: 78vw;
+    scroll-snap-align: start;
+  }
+  .collection__dots {
+    display: flex;
+    gap: 6px;
+    padding: var(--spacing-lg) 20px 0;
+  }
+  .collection__dots span {
+    width: 6px;
+    height: 2px;
+    background: var(--color-border-strong);
+    transition:
+      width 0.35s var(--ease-reveal),
+      background 0.35s var(--ease-reveal);
+  }
+  .collection__dots .is-on {
+    width: 16px;
+    background: var(--color-accent-default);
+  }
+  .collection__hint--desktop {
+    display: none;
+  }
+  .collection__hint--mobile {
+    display: inline;
+  }
+  .collection__head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  /* NOCTIS géant de fin de page : tient en entier dans la largeur. */
+  .rejoindre {
+    padding-top: var(--spacing-3xl);
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .rejoindre__giant {
+    font-size: 15vw;
   }
   .collection__head,
   .collection__rail {
@@ -687,6 +828,9 @@ html:not(.has-cursor) .cursor__ring {
   }
   .footer {
     flex-direction: column;
-    gap: var(--spacing-sm);
+    align-items: flex-start;
+    text-align: left;
+    gap: 20px;
+    padding: var(--spacing-xl) 0;
   }
 }
