@@ -763,7 +763,11 @@ html:not(.has-cursor) .cursor__ring {
     overflow: hidden;
     mask-image: none;
   }
+  /* Calée sur la hauteur de sa rangée : la bague tient en entier, sans être coupée. */
   .forge__media .scroll-seq {
+    position: absolute;
+    inset: 0;
+    margin: auto;
     width: auto;
     height: 100%;
     max-width: 100%;
