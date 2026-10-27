@@ -4,13 +4,13 @@ namespace App\Tests\Api;
 
 final class CatalogTest extends ApiTestCase
 {
-    public function testProductsListOnlyCouronneIOnSale(): void
+    public function testProductsListPiecesOnSale(): void
     {
         [$status, $products] = $this->api('GET', '/products');
 
         self::assertSame(200, $status);
         self::assertCount(5, $products);
-        self::assertSame(['couronne-i'], array_column(array_filter($products, fn ($p) => $p['available']), 'slug'));
+        self::assertSame(['couronne-i', 'spina'], array_values(array_column(array_filter($products, fn ($p) => $p['available']), 'slug')));
     }
 
     public function testQuoteUnderThresholdPaysColissimo(): void
@@ -47,7 +47,7 @@ final class CatalogTest extends ApiTestCase
 
     public function testRejectsForgedPieceSizeAndQuantity(): void
     {
-        self::assertSame(422, $this->api('POST', '/quote', ['items' => [['slug' => 'spina'] + self::ITEM]])[0]);
+        self::assertSame(422, $this->api('POST', '/quote', ['items' => [['slug' => 'vigile'] + self::ITEM]])[0]);
         self::assertSame(422, $this->api('POST', '/quote', ['items' => [['size' => 50] + self::ITEM]])[0]);
         self::assertSame(422, $this->api('POST', '/quote', ['items' => [['finish' => 'Or'] + self::ITEM]])[0]);
 

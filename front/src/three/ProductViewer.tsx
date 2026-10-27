@@ -5,8 +5,8 @@ import * as THREE from 'three'
 import { MODEL_URL } from './RingCanvas'
 import { prefersReducedMotion } from '../lib/scroll'
 
-function Ring() {
-  const { scene } = useGLTF(MODEL_URL, true)
+function Ring({ url }: { url: string }) {
+  const { scene } = useGLTF(url, true)
   // Clone : le même GLB peut être monté sur l'accueil et dans les cartes.
   return <primitive object={scene.clone()} />
 }
@@ -24,7 +24,7 @@ function Spin({ children }: { children: React.ReactNode }) {
  * Viewer de la fiche produit. Ordinateur : on fait tourner la bague à la main (360°), rotation lente au repos.
  * Mobile (interactive = false) : la bague tourne seule et le canvas laisse passer les gestes.
  */
-export function ProductViewer({ interactive = true }: { interactive?: boolean }) {
+export function ProductViewer({ model = MODEL_URL, interactive = true }: { model?: string; interactive?: boolean }) {
   return (
     <Canvas
       className="product-viewer"
@@ -34,9 +34,9 @@ export function ProductViewer({ interactive = true }: { interactive?: boolean })
       gl={{ antialias: true, toneMapping: THREE.AgXToneMapping }}
     >
       <Suspense fallback={null}>
-        {interactive ? <Ring /> : (
+        {interactive ? <Ring url={model} /> : (
           <Spin>
-            <Ring />
+            <Ring url={model} />
           </Spin>
         )}
         <Environment resolution={256}>

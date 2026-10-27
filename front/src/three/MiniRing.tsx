@@ -4,8 +4,8 @@ import { Environment, Lightformer, useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { MODEL_URL } from './RingCanvas'
 
-function Spinning() {
-  const { scene } = useGLTF(MODEL_URL, true)
+function Spinning({ url }: { url: string }) {
+  const { scene } = useGLTF(url, true)
   const g = useRef<THREE.Group>(null)
   useFrame((_, delta) => {
     if (g.current) g.current.rotation.y += delta * 0.8
@@ -22,11 +22,11 @@ function Spinning() {
 }
 
 /** Mini viewer 3D monté uniquement au survol d'une carte de la collection. */
-export function MiniRing() {
+export function MiniRing({ model = MODEL_URL }: { model?: string }) {
   return (
     <Canvas className="mini-ring" dpr={[1, 1.5]} camera={{ position: [0, 0, 0.07], fov: 30, near: 0.001, far: 1 }}>
       <Suspense fallback={null}>
-        <Spinning />
+        <Spinning url={model} />
         <Environment resolution={128}>
           <Lightformer form="rect" intensity={3} position={[0, 2, 1.5]} scale={[3, 1, 1]} />
           <Lightformer form="rect" intensity={1.5} position={[-3, 0.5, -1]} scale={[1, 3, 1]} />

@@ -35,7 +35,7 @@ export function ProductCard({ p }: { p: Product }) {
         {/* Au survol, l'image laisse place à la bague en 3D qui tourne. */}
         {!forge && hover && !prefersReducedMotion() && (
           <Suspense fallback={null}>
-            <MiniRing />
+            <MiniRing model={p.model} />
           </Suspense>
         )}
       </div>

@@ -93,7 +93,7 @@ final class AdminTest extends ApiTestCase
         self::assertSame(['2026-05', '2026-06', '2026-07', '2026-08', '2026-09', '2026-10'], array_column($d['monthly'], 'month'));
         self::assertSame([0, 0, 0, 0, 28000, 56000], array_column($d['monthly'], 'revenue'));
         self::assertSame(['paid' => 1, 'cast' => 1, 'polished' => 0, 'shipped' => 1], $d['production']);
-        self::assertSame([['slug' => 'couronne-i', 'name' => 'Couronne I', 'sold' => 6, 'total' => 150]], $d['series']);
+        self::assertSame([['slug' => 'couronne-i', 'name' => 'Couronne I', 'sold' => 6, 'total' => 150], ['slug' => 'spina', 'name' => 'Spina', 'sold' => 0, 'total' => 150]], $d['series']);
         self::assertCount(5, $d['latest']);
         self::assertSame('À couler', $d['latest'][0]['statusLabel']);
         self::assertSame('Inès R.', $d['latest'][0]['customer']);

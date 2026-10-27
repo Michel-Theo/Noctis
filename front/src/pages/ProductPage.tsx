@@ -126,7 +126,7 @@ export function ProductPage() {
               if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1)
             }}
           >
-            {view === '3d' ? <ProductViewer interactive={!touch} /> : <img key={media?.src} className="product__image" src={media?.src} alt={`${p.name} — ${media?.label}`} />}
+            {view === '3d' ? <ProductViewer model={p.model} interactive={!touch} /> : <img key={media?.src} className="product__image" src={media?.src} alt={`${p.name} — ${media?.label}`} />}
             <p className="product__serial t-label-s">{p.serial}</p>
             {view === '3d' && (
               <p className="product__hint t-label-s">
@@ -219,7 +219,7 @@ export function ProductPage() {
       </section>
 
       <section className="product__anatomy">
-        <img className="reveal" src="/img/produit/eclatee_nuit.webp" alt="Vue éclatée de Couronne I" loading="lazy" />
+        <img className="reveal" src={p.anatomy.src} alt={p.anatomy.alt} loading="lazy" />
         <div className="reveal">
           <p className="t-label t-accent">Anatomie</p>
           <h2 className="t-h1">
