@@ -238,15 +238,6 @@ export function ProductPage() {
         </div>
       </section>
 
-      <section className="product__worn">
-        <h2 className="t-h1 reveal">Portée la nuit</h2>
-        <div className="product__worn-grid">
-          <img className="reveal" src={p.worn.big} alt="Couronne I portée au majeur" loading="lazy" />
-          <img className="reveal" src={p.worn.top} alt="Gros plan de la bague portée" loading="lazy" />
-          <img className="reveal" src={p.worn.bottom} alt="Macro du poignard central" loading="lazy" />
-        </div>
-      </section>
-
       <section className="product__related">
         <h2 className="t-h1 reveal">Vous aimerez aussi</h2>
         <div className="product__related-grid">

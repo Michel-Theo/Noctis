@@ -19,7 +19,6 @@ export type ProductDetail = Product & {
   gallery: { id: string; label: string; src?: string }[]
   specs: [string, string][]
   accordions: { title: string; body: string }[]
-  worn: { big: string; top: string; bottom: string }
   related: string[]
 }
 
@@ -48,7 +47,6 @@ export const DETAILS: Record<string, ProductDetail> = {
     gallery: [
       { id: '3d', label: 'Bague en 3D' },
       { id: 'face', label: 'Face', src: `${IMG}/face_nuit.webp` },
-      { id: 'portee', label: 'Portée', src: `${IMG}/porte_dorsale_nuit.webp` },
       { id: 'profil', label: 'Profil', src: `${IMG}/profil_nuit.webp` },
       { id: 'macro', label: 'Macro', src: `${IMG}/macro-griffe_nuit.webp` },
     ],
@@ -75,7 +73,6 @@ export const DETAILS: Record<string, ProductDetail> = {
         body: 'Coulée à la commande, expédiée sous 10 jours. Livraison offerte dès 150 €. Retours sous 30 jours, pièce non portée.',
       },
     ],
-    worn: { big: `${IMG}/porte_dorsale_nuit.webp`, top: `${IMG}/porte_macro_nuit.webp`, bottom: `${IMG}/macro-poignard_nuit.webp` },
     related: ['couronne-ii', 'spina', 'vigile', 'chaine-veille'],
   },
 }

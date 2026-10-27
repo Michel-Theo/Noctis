@@ -45,7 +45,7 @@ export const ARTICLES: Article[] = [
         text: "Autour de lui, les griffes sont venues une à une. Chaque lame est une courbe de Bézier épaissie en amande, enroulée autour du doigt. À vingt-six, la pièce a cessé de ressembler à un objet pour ressembler à une créature.",
       },
       { type: 'quote', text: '« À vingt-six lames, la bague a cessé d’être un objet. »' },
-      { type: 'images', images: [`${IMG}/face_nuit.webp`, `${IMG}/porte_nuit_nuit.webp`] },
+      { type: 'images', images: [`${IMG}/face_nuit.webp`, `${IMG}/macro-poignard_nuit.webp`] },
       {
         type: 'p',
         text: "La fonte, elle, ne pardonne rien : une lame trop fine et l'argent ne coule pas jusqu'à la pointe. Trois prototypes ont fini au creuset avant que la quatrième sorte entière.",
@@ -59,7 +59,7 @@ export const ARTICLES: Article[] = [
     minutes: 4,
     date: '2026-09-28',
     excerpt: "Sous un lampadaire, l'argent ne brille pas : il découpe. Pourquoi nos pièces sont pensées pour l'obscurité.",
-    cover: `${IMG}/porte_nuit_nuit.webp`,
+    cover: `${IMG}/dessus_nuit.webp`,
     product: { slug: 'couronne-i', label: 'Découvrir Couronne I' },
     body: [
       {
@@ -71,7 +71,7 @@ export const ARTICLES: Article[] = [
         text: "C'est pour cette lumière-là que nous dessinons. Les lames de Couronne I sont orientées pour accrocher un reflet à la fois : un lampadaire, un écran, la flamme d'un briquet. La bague change de forme selon l'endroit où l'on se tient.",
       },
       { type: 'quote', text: '« Sous un lampadaire, l’argent ne brille pas : il découpe. »' },
-      { type: 'images', images: [`${V}/journal_chaine.webp`, `${V}/journal_perles.webp`] },
+      { type: 'images', images: [`${IMG}/profil_nuit.webp`, `${IMG}/34_nuit.webp`] },
       {
         type: 'p',
         text: "Le rhodium accentue l'effet : plus blanc que l'argent nu, il donne aux reflets cette froideur de lame. Portée sur une main nue, la pièce devient un signal plus qu'un ornement.",
