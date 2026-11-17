@@ -60,10 +60,19 @@ export function ScrollSequence({ dir, count, width, height, poster, trigger, lab
       const img = new Image()
       img.decoding = 'async'
       img.src = `${dir}/${String(i).padStart(3, '0')}.webp`
-      // Décodage anticipé : sinon le premier affichage de chaque image coûte une saccade.
-      img.decode().catch(() => {})
       frames.push(img)
     }
+    // Décodage anticipé des seules images proches de la position : sans lui, le premier affichage
+    // d'une image coûte une saccade ; avec les 160 d'un coup, environ 500 Mo de mémoire.
+    const decoded = new Set<number>()
+    const prefetch = (center: number) => {
+      for (let i = Math.max(0, center - 6); i <= Math.min(count - 1, center + 12); i++) {
+        if (decoded.has(i)) continue
+        decoded.add(i)
+        frames[i].decode().catch(() => decoded.delete(i))
+      }
+    }
+    prefetch(0)
     frames[0].onload = () => draw(0)
 
     let target = 0
@@ -75,20 +84,31 @@ export function ScrollSequence({ dir, count, width, height, poster, trigger, lab
       end: 'bottom bottom',
       onUpdate: (self) => {
         target = self.progress * (count - 1)
+        prefetch(Math.round(target))
       },
+    })
+    // Hors de l'écran, la boucle ne dessine plus rien.
+    let onScreen = false
+    const seen = ScrollTrigger.create({
+      trigger: trigger.current,
+      start: 'top bottom',
+      end: 'bottom top',
+      onToggle: (self) => (onScreen = self.isActive),
     })
     // Lissage : la séquence rattrape le scroll au lieu de sauter d'image en image.
     const loop = () => {
+      raf = requestAnimationFrame(loop)
+      if (!onScreen) return
       current += (target - current) * 0.18
       if (Math.abs(target - current) < 0.01) current = target
       draw(Math.round(current))
       onFrameRef.current?.(current)
-      raf = requestAnimationFrame(loop)
     }
     raf = requestAnimationFrame(loop)
 
     return () => {
       st.kill()
+      seen.kill()
       cancelAnimationFrame(raf)
     }
   }, [dir, count, width, height, poster, trigger])

@@ -282,28 +282,11 @@
   padding: var(--spacing-md) 0;
   border-top: 1px solid var(--color-border-default);
 }
-.product__worn,
 .product__related {
   display: grid;
   gap: var(--spacing-xl);
   padding: var(--spacing-4xl) var(--spacing-2xl);
   border-top: 1px solid var(--color-border-default);
-}
-.product__worn-grid {
-  display: grid;
-  grid-template-columns: 1.42fr 1fr;
-  grid-template-rows: repeat(2, minmax(0, 1fr));
-  gap: var(--spacing-md);
-  height: min(560px, 60vw);
-}
-.product__worn-grid img {
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  object-fit: cover;
-}
-.product__worn-grid img:first-child {
-  grid-row: span 2;
 }
 .product__related-grid {
   display: grid;
@@ -428,18 +411,7 @@
     display: none;
   }
   .product__anatomy,
-  .product__worn-grid {
-    grid-template-columns: 1fr;
-  }
-  .product__worn-grid {
-    height: auto;
-    grid-template-rows: auto;
-  }
-  .product__worn-grid img:first-child {
-    grid-row: auto;
-  }
-  .product__anatomy,
-  .product__worn,
+        .product__anatomy,
   .product__related {
     padding: var(--spacing-3xl) 20px;
   }

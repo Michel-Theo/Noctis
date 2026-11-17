@@ -18,7 +18,7 @@ export const LEGAL: LegalPage[] = [
       { title: 'Hébergement', text: 'Le site est hébergé sur un serveur privé virtuel loué par l’éditeur.' },
       {
         title: 'Propriété intellectuelle',
-        text: 'Le logo, les textes, les modèles 3D et les rendus des pièces ont été créés pour ce projet. Les photographies d’ambiance sont publiées sous licence Unsplash : Tahlia Doyle, Enlightening Images, Magnolia (@magnolia_x), Lisette Harzing et Siora Photography.',
+        text: 'Le logo, les textes, les modèles 3D et les rendus des pièces ont été créés pour ce projet. Les photographies d’ambiance sont publiées sous licence Unsplash : Tahlia Doyle, Enlightening Images, Lisette Harzing et Siora Photography.',
       },
     ],
   },

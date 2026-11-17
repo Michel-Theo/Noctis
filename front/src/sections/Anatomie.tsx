@@ -113,13 +113,16 @@ export function Anatomie() {
             Vingt-six lames sculptées une à une, assemblées autour d'un poignard central. Rien n'est symétrique par
             hasard.
           </p>
-          <ul className="visually-hidden">
+          {/* Ordinateur : lue par les lecteurs d'écran seulement (les légendes sont sur la pièce). Mobile : affichée. */}
+          <ol className="anatomie__legend">
             {CALLOUTS.map((c) => (
               <li key={c.n}>
-                {c.t} : {c.d}
+                <span className="t-label t-accent">{c.n}</span>
+                <span className="t-label">{c.t}</span>
+                <span className="t-label-s">{c.d}</span>
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       </div>
     </section>

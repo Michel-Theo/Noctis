@@ -1,8 +1,8 @@
-import { Suspense, useRef, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Environment, Lightformer, useGLTF } from '@react-three/drei'
+import { Environment, Lightformer, PerformanceMonitor, useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
-import { sceneState } from '../lib/scroll'
+import { ScrollTrigger, sceneState } from '../lib/scroll'
 
 export const MODEL_URL = '/models/ring_tribal.draco.glb'
 
@@ -38,7 +38,9 @@ function Ring() {
     if (t < 0.02) g.rotation.y += delta * 0.1
     g.rotation.x = THREE.MathUtils.damp(g.rotation.x, sceneState.pointer.y * 0.25 - t * 0.6, 4, delta)
     g.rotation.z = THREE.MathUtils.damp(g.rotation.z, -sceneState.pointer.x * 0.15, 4, delta)
-    g.position.y = THREE.MathUtils.damp(g.position.y, -t * 0.01, 6, delta)
+    // Écran vertical : la bague remonte pour laisser le bas de l'écran au titre.
+    const lift = state.size.width < state.size.height ? 0.009 : 0
+    g.position.y = THREE.MathUtils.damp(g.position.y, lift - t * 0.01, 6, delta)
     g.scale.setScalar(THREE.MathUtils.damp(g.scale.x, 1 - t * 0.35, 6, delta))
   })
 
@@ -78,6 +80,23 @@ function RimSweep() {
 
 export function RingCanvas() {
   const [webgl] = useState(hasWebGL)
+  // La bague s'efface à la fin du héros : au-delà, inutile de recalculer 60 images par seconde.
+  const [visible, setVisible] = useState(true)
+  // Pleine définition par défaut ; abaissée seulement si l'ordinateur n'arrive pas à suivre.
+  const [dpr, setDpr] = useState(1.75)
+
+  useEffect(() => {
+    const hero = document.querySelector('.hero')
+    if (!hero) return
+    const st = ScrollTrigger.create({
+      trigger: hero,
+      start: 'top top',
+      end: 'bottom top',
+      onLeave: () => setVisible(false),
+      onEnterBack: () => setVisible(true),
+    })
+    return () => st.kill()
+  }, [])
 
   // Repli : rendu Cycles fixe si WebGL est indisponible.
   if (!webgl) return <img className="ring-canvas ring-fallback" src="/img/produit/face_nuit.webp" alt="" />
@@ -85,11 +104,13 @@ export function RingCanvas() {
   return (
     <Canvas
       className="ring-canvas"
-      dpr={[1, 1.75]}
+      dpr={dpr}
+      frameloop={visible ? 'always' : 'never'}
       camera={{ position: [0, 0, 0.066], fov: 30, near: 0.001, far: 2 }}
       gl={{ antialias: true, toneMapping: THREE.AgXToneMapping, toneMappingExposure: 1 }}
     >
       <CameraFit />
+      <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.75)} flipflops={3} onFallback={() => setDpr(1)} />
       <Suspense fallback={null}>
         <Ring />
         {/* Studio « softbox + contre-jour » reconstruit en formes lumineuses : pas de HDRI à télécharger. */}

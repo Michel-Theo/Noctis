@@ -20,21 +20,26 @@ export function Forge() {
 
   useEffect(() => {
     if (prefersReducedMotion()) return
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia(root)
+    mm.add({ mobile: '(max-width: 800px)', desktop: '(min-width: 801px)' }, (c) => {
+      const mobile = c.conditions?.mobile
       const tl = gsap.timeline({
         scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom bottom', scrub: 1 },
         defaults: { ease: 'power3.inOut' },
       })
       tl.fromTo('.forge__word', { opacity: 0.15 }, { opacity: 1, stagger: 0.02, duration: 0.1, ease: 'none' })
-      gsap.utils.toArray<HTMLElement>('.forge__step').forEach((step) => {
+      const steps = gsap.utils.toArray<HTMLElement>('.forge__step')
+      steps.forEach((step, i) => {
         const num = step.querySelector('.forge__num')
         tl.fromTo(step, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.12 })
           // Le numéro s'allume brièvement en rouge puis retombe en cendre.
           .fromTo(num, { color: 'var(--color-text-accent)' }, { color: 'var(--color-text-secondary)', duration: 0.12 })
           .to({}, { duration: 0.1 })
+        // Mobile : les étapes sont superposées, chacune s'efface avant la suivante (la dernière reste).
+        if (mobile && i < steps.length - 1) tl.to(step, { opacity: 0, y: -16, duration: 0.08 })
       })
-    }, root)
-    return () => ctx.revert()
+    })
+    return () => mm.revert()
   }, [])
 
   return (
